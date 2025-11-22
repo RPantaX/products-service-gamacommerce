@@ -198,7 +198,6 @@ public class CategoryAdapter implements CategoryServiceOut {
                 .productCategoryName(requestCategory.getCategoryName().toUpperCase())
                 .createdAt(Constants.getTimestamp())
                 .state(Constants.STATUS_ACTIVE)
-                .companyId(1L) // Assuming a default company ID; adjust as necessary
                 .promotionEntities(promotions)
                 .modifiedByUser(Constants.getUserInSession())
                 .build();

@@ -3,7 +3,6 @@ package com.braidsbeautyByAngie.aggregates.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor

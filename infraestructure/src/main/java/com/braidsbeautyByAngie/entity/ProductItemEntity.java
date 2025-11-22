@@ -32,7 +32,7 @@ public class ProductItemEntity {
 
     @Column(name = "Product_Item_Price", nullable = false)
     private BigDecimal productItemPrice;
-    @Column(name = "Shoppring_Cart_Item_ID", nullable = true)
+    @Column(name = "Shopping_Cart_Item_ID", nullable = true)
     private Long shoppingCartItemId;
 
     @Column(name = "Company_ID", nullable = false)

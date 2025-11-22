@@ -2,8 +2,6 @@ package com.braidsbeautyByAngie.aggregates.dto;
 
 import lombok.*;
 
-import java.sql.Timestamp;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,7 +12,5 @@ public class ProductCategoryDTO {
     private Long categoryId;
 
     private String categoryName;
-
-    private Long companyId;
 
 }
