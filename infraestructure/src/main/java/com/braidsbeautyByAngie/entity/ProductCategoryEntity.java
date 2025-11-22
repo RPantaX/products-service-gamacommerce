@@ -25,6 +25,9 @@ public class ProductCategoryEntity {
     @Column(name = "Product_Category_Name", nullable = false, unique = true)
     private String productCategoryName;
 
+    @Column(name = "Company_ID", nullable = false)
+    private Long companyId;
+
     // Relación de "padre" (ManyToOne) a "hijos" (OneToMany) en la misma entidad
     @ManyToOne
     @JoinColumn(name = "Product_Category_Parent_ID")

@@ -29,6 +29,8 @@ public class ProductEntity {
 
     @Column(name = "Product_Image", nullable = true)
     private String productImage;
+    @Column(name = "Company_ID", nullable = false)
+    private Long companyId;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "Product_Category_ID")

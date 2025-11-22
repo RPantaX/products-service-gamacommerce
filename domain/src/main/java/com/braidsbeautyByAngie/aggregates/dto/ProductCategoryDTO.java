@@ -15,4 +15,6 @@ public class ProductCategoryDTO {
 
     private String categoryName;
 
+    private Long companyId;
+
 }

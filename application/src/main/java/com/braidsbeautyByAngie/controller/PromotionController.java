@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ApiResponse;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ApiResponse;
 
 @OpenAPIDefinition(
         info = @Info(

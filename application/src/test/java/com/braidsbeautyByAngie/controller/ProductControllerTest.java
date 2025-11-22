@@ -6,7 +6,7 @@ import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageable
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseProduct;
 import com.braidsbeautyByAngie.ports.in.ProductServiceIn;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ApiResponse;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ApiResponse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

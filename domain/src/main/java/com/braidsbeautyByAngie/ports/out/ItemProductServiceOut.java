@@ -4,8 +4,8 @@ import com.braidsbeautyByAngie.aggregates.dto.ProductItemDTO;
 import com.braidsbeautyByAngie.aggregates.request.RequestItemProduct;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseItemProduct;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductItemDetail;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.dto.Product;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.events.ProductReservedEvent;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.dto.Product;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.events.ProductReservedEvent;
 
 import java.math.BigDecimal;
 import java.util.List;

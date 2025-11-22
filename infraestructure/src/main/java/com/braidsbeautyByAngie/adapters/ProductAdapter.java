@@ -12,10 +12,10 @@ import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ProductServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.aws.IBucketUtil;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.BucketParams;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.GlobalErrorEnum;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ValidateUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.BucketParams;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.GlobalErrorEnum;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;

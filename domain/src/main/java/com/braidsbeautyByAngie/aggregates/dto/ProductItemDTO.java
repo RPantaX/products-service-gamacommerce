@@ -24,5 +24,7 @@ public class ProductItemDTO {
 
     private Long orderLineId;
 
+    private Long companyId;
+
     private Long shoppingCartItemId;
 }

@@ -23,4 +23,6 @@ public class PromotionDTO {
     private Timestamp promotionStartDate;
 
     private Timestamp promotionEndDate;
+
+    private Long companyId;
 }

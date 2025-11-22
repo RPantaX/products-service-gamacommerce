@@ -35,6 +35,8 @@ public class PromotionEntity {
 
     @Column(name = "Promotion_End_Date", nullable = true)
     private Timestamp promotionEndDate;
+    @Column(name = "Company_ID", nullable = false)
+    private Long companyId;
 
     @ManyToMany(fetch = FetchType.EAGER, targetEntity = ProductCategoryEntity.class, cascade = CascadeType.PERSIST)
     @JoinTable(name = "Promotion_Product_Category",

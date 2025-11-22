@@ -1,7 +1,7 @@
 package com.braidsbeautyByAngie.aggregates.constants;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.aws.IBucketUtil;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.BucketParams;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.BucketParams;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -18,8 +18,8 @@ import com.braidsbeautyByAngie.repository.ProductCategoryRepository;
 
 
 import com.braidsbeautyByAngie.repository.PromotionRepository;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.GlobalErrorEnum;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ValidateUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.GlobalErrorEnum;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -198,6 +198,7 @@ public class CategoryAdapter implements CategoryServiceOut {
                 .productCategoryName(requestCategory.getCategoryName().toUpperCase())
                 .createdAt(Constants.getTimestamp())
                 .state(Constants.STATUS_ACTIVE)
+                .companyId(1L) // Assuming a default company ID; adjust as necessary
                 .promotionEntities(promotions)
                 .modifiedByUser(Constants.getUserInSession())
                 .build();

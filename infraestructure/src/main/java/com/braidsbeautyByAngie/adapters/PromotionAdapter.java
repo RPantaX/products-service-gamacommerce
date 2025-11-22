@@ -12,8 +12,8 @@ import com.braidsbeautyByAngie.mapper.PromotionMapper;
 import com.braidsbeautyByAngie.ports.out.PromotionServiceOut;
 import com.braidsbeautyByAngie.repository.PromotionRepository;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.GlobalErrorEnum;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ValidateUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.GlobalErrorEnum;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ValidateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
