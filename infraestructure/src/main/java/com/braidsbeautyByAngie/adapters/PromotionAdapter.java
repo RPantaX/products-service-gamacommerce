@@ -116,7 +116,7 @@ public class PromotionAdapter implements PromotionServiceOut {
 
         Pageable pageable = createPageable(pageNumber, pageSize, orderBy, sortDir);
 
-        Page<PromotionEntity> promotionsPage = promotionRepository.findAllByStateTrueAndCompanyIdAndPageable(pageable, companyId);
+        Page<PromotionEntity> promotionsPage = promotionRepository.findAllByStateTrueAndCompanyIdAndPageable(pageable, Constants.getCompanyIdInSession());
 
         if (promotionsPage.isEmpty()) {
             log.info("No promotions found for given parameters");
@@ -142,7 +142,7 @@ public class PromotionAdapter implements PromotionServiceOut {
     public List<PromotionDTO> listPromotionByCompanyIdOut(Long companyId) {
         log.info("Fetching all promotions");
 
-        List<PromotionEntity> promotionEntities = promotionRepository.findAllByStateTrueAndCompanyId(companyId);
+        List<PromotionEntity> promotionEntities = promotionRepository.findAllByStateTrueAndCompanyId(Constants.getCompanyIdInSession());
         return promotionEntities.stream().map(promotionMapper::mapPromotionEntityToDto).toList();
     }
 

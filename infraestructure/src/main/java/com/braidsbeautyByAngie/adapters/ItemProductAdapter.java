@@ -209,11 +209,11 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     }
     public BucketParams buildBucketParams(Long productId, MultipartFile imagen, Long itemProductId){
         String fileName = "itemProduct-" + productId + "-"+itemProductId+ "-" + System.currentTimeMillis();
-
+        Long companyId = Constants.getCompanyIdInSession();
         // Para operaciones de eliminación (cuando imagen es null)
         if (imagen == null) {
             // Construir el path basado en el patrón de nombres que usamos
-            String filePath = "itemProduct/" + fileName; // Sin extensión para eliminación
+            String filePath = "companies/" + companyId + "/itemProduct/" + fileName; // Sin extensión para eliminación
             return BucketParams.builder()
                     .bucketName(bucketName)
                     .filePath(filePath)
@@ -229,7 +229,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
             return BucketParams.builder()
                     .file(imagen)
                     .bucketName(bucketName)
-                    .filePath("itemProduct/" + fileName)
+                    .filePath("companies/" + companyId + "/itemProduct/" + fileName)
                     .build();
         }
     }

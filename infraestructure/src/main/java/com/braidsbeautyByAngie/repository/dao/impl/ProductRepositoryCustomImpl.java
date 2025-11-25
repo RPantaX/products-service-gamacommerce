@@ -1,5 +1,6 @@
 package com.braidsbeautyByAngie.repository.dao.impl;
 
+import com.braidsbeautyByAngie.aggregates.constants.Constants;
 import com.braidsbeautyByAngie.aggregates.dto.PromotionDTO;
 import com.braidsbeautyByAngie.aggregates.request.RequestProductFilter;
 import com.braidsbeautyByAngie.aggregates.response.categories.ResponseCategoryy;
@@ -62,7 +63,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             predicates.add(cb.isTrue(productRoot.get("state")));
             predicates.add(cb.isTrue(itemJoin.get("state")));
         }
-
+        //filtro por companyId
+        predicates.add(cb.equal(productRoot.get("companyId"), Constants.getCompanyIdInSession()));
         // Filtros de producto principal
         addProductFilters(cb, productRoot, predicates, filter);
 

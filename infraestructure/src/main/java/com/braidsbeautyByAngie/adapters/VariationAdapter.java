@@ -84,7 +84,7 @@ public class VariationAdapter implements VariationServiceOut {
     @Override
     public List<VariationDTO> listVariationByCompanyIdOut(Long companyId) {
         log.info("Fetching all variations");
-        List<VariationEntity> variationEntityList = variationRepository.findAllVariationsWithOptionsAndCompanyId(companyId);
+        List<VariationEntity> variationEntityList = variationRepository.findAllVariationsWithOptionsAndCompanyId(com.braidsbeautyByAngie.aggregates.constants.Constants.getCompanyIdInSession());
         log.info("Total variations fetched: {}", variationEntityList.size());
         return variationEntityList.stream().map(variationMapper::mapVariationEntityToDto).toList();
     }

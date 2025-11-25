@@ -294,7 +294,7 @@ public class ProductAdapter implements ProductServiceOut {
                 Sort.by(orderBy).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(companyId ,pageable);
+        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(Constants.getCompanyIdInSession() ,pageable);
 
         // Convertir entidades a DTOs
         List<ResponseProduct> responseProductList = productPage.getContent().stream().map(product -> {
@@ -374,7 +374,7 @@ public class ProductAdapter implements ProductServiceOut {
         log.info("Executing product filter in adapter with parameters: {}", filter);
         // Validaciones de negocio si son necesarias
         validateFilterRequest(filter);
-        return productCategoryRepository.filterProductsByCompanyId(filter, companyId);
+        return productCategoryRepository.filterProductsByCompanyId(filter, Constants.getCompanyIdInSession());
     }
 
     @Override
@@ -483,19 +483,19 @@ public class ProductAdapter implements ProductServiceOut {
             filter.setPageSize(10);
         }
     }
-    private String saveImageInS3(MultipartFile imagen, Long productId ) {
+    private String saveImageInS3(MultipartFile imagen, Long productId) {
         BucketParams bucketParams = buildBucketParams(productId, imagen);
         bucketUtil.addFile(bucketParams);
         //bucketUtil.setPublic(bucketParams, true);
         return bucketUtil.getUrl(bucketParams);
     }
-    public BucketParams buildBucketParams(Long productId, MultipartFile imagen){
+    public BucketParams buildBucketParams(Long productId, MultipartFile imagen) {
         String fileName = "product-" + productId + "-" + System.currentTimeMillis();
-
+        Long companyId = Constants.getCompanyIdInSession();
         // Para operaciones de eliminación (cuando imagen es null)
         if (imagen == null) {
             // Construir el path basado en el patrón de nombres que usamos
-            String filePath = "products/" + fileName; // Sin extensión para eliminación
+            String filePath = "companies/" + companyId + "/products/" + fileName; // Sin extensión para eliminación
             return BucketParams.builder()
                     .bucketName(bucketName)
                     .filePath(filePath)
@@ -511,7 +511,7 @@ public class ProductAdapter implements ProductServiceOut {
             return BucketParams.builder()
                     .file(imagen)
                     .bucketName(bucketName)
-                    .filePath("products/" + fileName)
+                    .filePath("companies/" + companyId + "/products/" + fileName)
                     .build();
         }
     }
