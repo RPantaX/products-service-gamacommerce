@@ -18,7 +18,9 @@ public interface ProductServiceOut {
     ProductDTO deleteProductOut(Long productId);
 
     ResponseListPageableProduct listProductPageableOut(int pageNumber, int pageSize, String orderBy, String sortDir);
+    ResponseListPageableProduct listProductPageableByCompanyIdOut(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId);
 
     ResponseListPageableProduct filterProductsOut(RequestProductFilter filter);
+    ResponseListPageableProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId);
     ResponseProductFilterOptions getProductFilterOptionsOut();
 }

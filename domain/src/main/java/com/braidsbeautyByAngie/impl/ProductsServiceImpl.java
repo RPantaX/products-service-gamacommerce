@@ -44,8 +44,18 @@ public class ProductsServiceImpl implements ProductServiceIn {
     }
 
     @Override
+    public ResponseListPageableProduct listProductPageableByCompanyIdIn(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId) {
+        return productServiceOut.listProductPageableByCompanyIdOut(pageNumber, pageSize, orderBy, sortDir, companyId);
+    }
+
+    @Override
     public ResponseListPageableProduct filterProductsIn(RequestProductFilter filter) {
         return productServiceOut.filterProductsOut(filter);
+    }
+
+    @Override
+    public ResponseListPageableProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId) {
+        return productServiceOut.filterProductsByCompanyIdOut(filter, companyId);
     }
 
     @Override

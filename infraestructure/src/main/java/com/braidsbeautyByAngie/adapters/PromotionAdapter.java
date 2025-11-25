@@ -109,12 +109,40 @@ public class PromotionAdapter implements PromotionServiceOut {
                 responsePromotions, promotionsPage.getNumber(),promotionsPage.getSize()
                 , promotionsPage.getTotalPages(),promotionsPage.getTotalElements(), promotionsPage.isLast());
     }
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseListPageablePromotion listPromotionByPageAndCompanyIdOut(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId) {
+        log.info("Fetching promotions with pagination: pageNumber={}, pageSize={}, orderBy={}, sortDir={}", pageNumber, pageSize, orderBy, sortDir);
+
+        Pageable pageable = createPageable(pageNumber, pageSize, orderBy, sortDir);
+
+        Page<PromotionEntity> promotionsPage = promotionRepository.findAllByStateTrueAndCompanyIdAndPageable(pageable, companyId);
+
+        if (promotionsPage.isEmpty()) {
+            log.info("No promotions found for given parameters");
+            return null;
+        }
+
+        List<ResponsePromotion> responsePromotions = buildResponsePromotions(promotionsPage);
+        log.info("Found {} promotions", promotionsPage.getTotalElements());
+
+        return new ResponseListPageablePromotion(
+                responsePromotions, promotionsPage.getNumber(),promotionsPage.getSize()
+                , promotionsPage.getTotalPages(),promotionsPage.getTotalElements(), promotionsPage.isLast());
+    }
 
     @Override
     public List<PromotionDTO> listPromotionOut() {
         log.info("Fetching all promotions");
 
         List<PromotionEntity> promotionEntities = promotionRepository.findAllByStateTrue();
+        return promotionEntities.stream().map(promotionMapper::mapPromotionEntityToDto).toList();
+    }
+    @Override
+    public List<PromotionDTO> listPromotionByCompanyIdOut(Long companyId) {
+        log.info("Fetching all promotions");
+
+        List<PromotionEntity> promotionEntities = promotionRepository.findAllByStateTrueAndCompanyId(companyId);
         return promotionEntities.stream().map(promotionMapper::mapPromotionEntityToDto).toList();
     }
 
@@ -138,6 +166,7 @@ public class PromotionAdapter implements PromotionServiceOut {
                 .promotionDiscountRate(requestPromotion.getPromotionDiscountRate())
                 .promotionStartDate(requestPromotion.getPromotionStartDate())
                 .promotionEndDate(requestPromotion.getPromotionEndDate())
+                .companyId(Constants.getCompanyIdInSession())
                 .createdAt(Constants.getTimestamp())
                 .modifiedByUser(Constants.getUserInSession())
                 .state(Constants.STATUS_ACTIVE)
@@ -165,6 +194,7 @@ public class PromotionAdapter implements PromotionServiceOut {
         promotionEntity.setPromotionDiscountRate(requestPromotion.getPromotionDiscountRate());
         promotionEntity.setPromotionStartDate(requestPromotion.getPromotionStartDate());
         promotionEntity.setPromotionEndDate(requestPromotion.getPromotionEndDate());
+        promotionEntity.setCompanyId(Constants.getCompanyIdInSession());
         promotionEntity.setModifiedByUser(Constants.getUserInSession());
         promotionEntity.setModifiedAt(Constants.getTimestamp());
         promotionEntity.setProductCategoryEntities(new HashSet<>());

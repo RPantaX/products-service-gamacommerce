@@ -28,6 +28,11 @@ public class VariationController {
         return ApiResponse.ok("List of variations retrieved successfully",
                 variationServiceIn.listVariationIn());
     }
+    @GetMapping("/list/company/{companyId}")
+    public ApiResponse listVariationsByCompanyId(@PathVariable(name = "companyId") Long companyId) {
+        return ApiResponse.ok("List of variations retrieved successfully",
+                variationServiceIn.listVariationByCompanyIdIn(companyId));
+    }
 
     @GetMapping(value = "/{variationId}")
     public ApiResponse getVariationById(@PathVariable(name = "variationId") Long variationId) {

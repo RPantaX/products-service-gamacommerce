@@ -117,8 +117,112 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .end(page.isLast())
                 .build();
     }
+
+    @Override
+    public ResponseListPageableProduct filterProductsByCompanyId(RequestProductFilter filter, Long companyId) {
+        log.info("Filtering products with parameters: {}", filter);
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> query = cb.createQuery(ProductEntity.class);
+        Root<ProductEntity> productRoot = query.from(ProductEntity.class);
+
+        // Joins necesarios
+        Join<ProductEntity, ProductCategoryEntity> categoryJoin = productRoot.join("productCategoryEntity", JoinType.LEFT);
+        Join<ProductEntity, ProductItemEntity> itemJoin = productRoot.join("productItemEntities", JoinType.LEFT);
+        Join<ProductCategoryEntity, PromotionEntity> promotionJoin = categoryJoin.join("promotionEntities", JoinType.LEFT);
+        Join<ProductItemEntity, VariationOptionEntity> variationOptionJoin = itemJoin.join("variationOptionEntitySet", JoinType.LEFT);
+        Join<VariationOptionEntity, VariationEntity> variationJoin = variationOptionJoin.join("variationEntity", JoinType.LEFT);
+
+        // Lista de predicados para construir la consulta
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Filtro base: solo productos activos
+        if (filter.getActiveOnly() == null || filter.getActiveOnly()) {
+            predicates.add(cb.isTrue(productRoot.get("state")));
+            predicates.add(cb.isTrue(itemJoin.get("state")));
+        }
+
+        // Filtros de producto principal
+        addProductFiltersWithCompanyId(cb, productRoot, predicates, filter, companyId);
+
+        // Filtros de categoría
+        addCategoryFilters(cb, categoryJoin, predicates, filter);
+
+        // Filtros de precio y stock
+        addPriceAndStockFilters(cb, itemJoin, predicates, filter);
+
+        // Filtros de variaciones
+        addVariationFilters(cb, variationJoin, variationOptionJoin, predicates, filter);
+
+        // Filtros de promociones
+        addPromotionFilters(cb, promotionJoin, predicates, filter);
+
+        // Aplicar todos los predicados
+        if (!predicates.isEmpty()) {
+            query.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
+
+        // Distinct para evitar duplicados debido a los joins
+        query.distinct(true);
+
+        // Ordenamiento
+        addOrderBy(cb, query, productRoot, itemJoin, filter);
+
+        // Ejecutar consulta con paginación
+        Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
+        TypedQuery<ProductEntity> typedQuery = entityManager.createQuery(query);
+
+        // Calcular total de elementos para la paginación
+        long totalElements = getTotalElements(filter);
+
+        // Aplicar paginación
+        typedQuery.setFirstResult((int) pageable.getOffset());
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+        List<ProductEntity> products = typedQuery.getResultList();
+
+        // Convertir a DTOs
+        List<ResponseProduct> responseProducts = convertToResponseProducts(products);
+
+        // Crear página
+        Page<ResponseProduct> page = new PageImpl<>(responseProducts, pageable, totalElements);
+
+        return ResponseListPageableProduct.builder()
+                .responseProductList(responseProducts)
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
+                .end(page.isLast())
+                .build();
+    }
+
     private void addProductFilters(CriteriaBuilder cb, Root<ProductEntity> productRoot,
                                    List<Predicate> predicates, RequestProductFilter filter) {
+
+        // Filtro por nombre de producto
+        if (filter.getProductName() != null && !filter.getProductName().trim().isEmpty()) {
+            predicates.add(cb.like(cb.upper(productRoot.get("productName")),
+                    "%" + filter.getProductName().toUpperCase() + "%"));
+        }
+
+        // Filtro por IDs de producto
+        if (filter.getProductIds() != null && !filter.getProductIds().isEmpty()) {
+            predicates.add(productRoot.get("productId").in(filter.getProductIds()));
+        }
+
+        // Búsqueda general en nombre y descripción
+        if (filter.getSearchTerm() != null && !filter.getSearchTerm().trim().isEmpty()) {
+            String searchPattern = "%" + filter.getSearchTerm().toUpperCase() + "%";
+            Predicate nameSearch = cb.like(cb.upper(productRoot.get("productName")), searchPattern);
+            Predicate descSearch = cb.like(cb.upper(productRoot.get("productDescription")), searchPattern);
+            predicates.add(cb.or(nameSearch, descSearch));
+        }
+    }
+    private void addProductFiltersWithCompanyId(CriteriaBuilder cb, Root<ProductEntity> productRoot,
+                                   List<Predicate> predicates, RequestProductFilter filter, Long companyId) {
+        // Filtro por companyId
+        predicates.add(cb.equal(productRoot.get("companyId"), companyId));
 
         // Filtro por nombre de producto
         if (filter.getProductName() != null && !filter.getProductName().trim().isEmpty()) {

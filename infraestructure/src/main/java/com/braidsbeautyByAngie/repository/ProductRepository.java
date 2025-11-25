@@ -26,6 +26,9 @@ public interface ProductRepository extends JpaRepository<ProductEntity,Long> {
     @Query(value = "SELECT p FROM ProductEntity p WHERE p.state=true")
     Page<ProductEntity> findAllByStateTrueAndPageable(Pageable pageable);
 
+    @Query(value = "SELECT p FROM ProductEntity p WHERE p.state=true AND p.companyId = :companyId")
+    Page<ProductEntity> findAllByStateTrueAndCompanyIdAndPageable(Long companyId , Pageable pageable);
+
     @Query(value = """
     SELECT p.productId AS productId,
            p.productName AS productName,

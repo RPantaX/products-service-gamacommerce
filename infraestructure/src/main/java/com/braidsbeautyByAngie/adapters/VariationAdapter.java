@@ -41,6 +41,7 @@ public class VariationAdapter implements VariationServiceOut {
         validateVariationName(requestVariation.getVariationName(), variationEntity);
 
         variationEntity.setVariationName(requestVariation.getVariationName());
+        variationEntity.setCompanyId(com.braidsbeautyByAngie.aggregates.constants.Constants.getCompanyIdInSession());
         variationEntity.setModifiedByUser(com.braidsbeautyByAngie.aggregates.constants.Constants.getUserInSession());
         variationEntity.setModifiedAt(Constants.getTimestamp());
 
@@ -80,10 +81,18 @@ public class VariationAdapter implements VariationServiceOut {
         log.info("Total variations fetched: {}", variationEntityList.size());
         return variationEntityList.stream().map(variationMapper::mapVariationEntityToDto).toList();
     }
+    @Override
+    public List<VariationDTO> listVariationByCompanyIdOut(Long companyId) {
+        log.info("Fetching all variations");
+        List<VariationEntity> variationEntityList = variationRepository.findAllVariationsWithOptionsAndCompanyId(companyId);
+        log.info("Total variations fetched: {}", variationEntityList.size());
+        return variationEntityList.stream().map(variationMapper::mapVariationEntityToDto).toList();
+    }
 
     private VariationEntity buildVariationEntity(RequestVariation requestVariation) {
         return VariationEntity.builder()
                 .variationName(requestVariation.getVariationName())
+                .companyId(com.braidsbeautyByAngie.aggregates.constants.Constants.getCompanyIdInSession())
                 .state(Constants.STATUS_ACTIVE)
                 .createdAt(Constants.getTimestamp())
                 .modifiedByUser(com.braidsbeautyByAngie.aggregates.constants.Constants.getUserInSession())

@@ -18,8 +18,10 @@ public interface ProductServiceIn {
     ProductDTO deleteProductIn(Long productId);
 
     ResponseListPageableProduct listProductPageableIn(int pageNumber, int pageSize, String orderBy, String sortDir);
+    ResponseListPageableProduct listProductPageableByCompanyIdIn(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId);
 
     ResponseListPageableProduct filterProductsIn(RequestProductFilter filter);
+    ResponseListPageableProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId);
 
     ResponseProductFilterOptions getProductFilterOptionsIn();
 }

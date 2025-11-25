@@ -62,6 +62,7 @@ public class ProductAdapter implements ProductServiceOut {
                 .productName(productNameUpperCase)
                 .productDescription(requestProduct.getProductDescription())
                 .productCategoryEntity(productCategorySaved)
+                .companyId(Constants.getCompanyIdInSession())
                 .state(Constants.STATUS_ACTIVE)
                 .modifiedByUser(Constants.getUserInSession())
                 .createdAt(Constants.getTimestamp())
@@ -168,6 +169,7 @@ public class ProductAdapter implements ProductServiceOut {
         }
         productEntitySaved.setModifiedByUser(Constants.getUserInSession());
         productEntitySaved.setModifiedAt(Constants.getTimestamp());
+        productEntitySaved.setCompanyId(Constants.getCompanyIdInSession());
         productEntitySaved.setProductName(productNameUpperCase);
         productEntitySaved.setProductDescription(requestProduct.getProductDescription());
 
@@ -282,13 +284,97 @@ public class ProductAdapter implements ProductServiceOut {
                 productPage.isLast()
         );
     }
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseListPageableProduct listProductPageableByCompanyIdOut(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId) {
 
+        log.info("Searching all products with the following parameters: {}",Constants.parametersForLogger(pageNumber, pageSize, orderBy, sortDir));
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(orderBy).ascending() :
+                Sort.by(orderBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(companyId ,pageable);
+
+        // Convertir entidades a DTOs
+        List<ResponseProduct> responseProductList = productPage.getContent().stream().map(product -> {
+
+            ProductEntity productEntity = productRepository.findProductByProductIdWithStateTrue(product.getProductId()).orElse(null);
+            if (productEntity == null) {
+                log.error("Product category is null for product ID: {}", product.getProductId());
+                ValidateUtil.evaluar(false, GlobalErrorEnum.CATEGORY_NOT_FOUND_ERC00008);
+            }
+            ProductCategoryEntity productCategory = productCategoryRepository.findProductCategoryIdAndStateTrue(productEntity.getProductCategoryEntity().getProductCategoryId()).orElse(null);
+            if (productCategory == null) {
+                log.error("Category not found for product ID: {}", product.getProductId());
+                ValidateUtil.evaluar(false, GlobalErrorEnum.CATEGORY_NOT_FOUND_ERC00008);
+            }
+            List<PromotionDTO> promotionDTOList = productCategory.getPromotionEntities().stream()
+                    .map(promotionMapper::mapPromotionEntityToDto)
+                    .collect(Collectors.toList());
+            ResponseCategoryy responseCategoryy = ResponseCategoryy.builder()
+                    .productCategoryId(productCategory.getProductCategoryId())
+                    .productCategoryName(productCategory.getProductCategoryName())
+                    .promotionDTOList(promotionDTOList)
+                    .build();
+
+            List<ResponseProductItemDetaill> productItemDetails = product.getProductItemEntities().stream().map(item -> {
+
+                List<ResponseVariationn> variations = item.getVariationOptionEntitySet().stream()
+                        .map(variationOption -> {
+                            VariationEntity variationEntity = variationOption.getVariationEntity();
+                            // Manejar casos nulos
+                            String variationName = variationEntity != null ? variationEntity.getVariationName() : "Unknown Variation";
+                            String variationValue = variationOption.getVariationOptionValue();
+
+                            return new ResponseVariationn(variationName, variationValue);
+                        })
+                        .collect(Collectors.toList());
+
+                return new ResponseProductItemDetaill(
+                        item.getProductItemId(),
+                        item.getProductItemSKU(),
+                        item.getProductItemQuantityInStock(),
+                        item.getProductItemImage(),
+                        item.getProductItemPrice(),
+                        variations
+                );
+            }).collect(Collectors.toList());
+
+            return new ResponseProduct(
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getProductDescription(),
+                    product.getProductImage(),
+                    responseCategoryy,
+                    productItemDetails
+
+            );
+        }).collect(Collectors.toList());
+
+        // Crear el objeto de respuesta paginada
+        return new ResponseListPageableProduct(
+                responseProductList,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalPages(),
+                productPage.getTotalElements(),
+                productPage.isLast()
+        );
+    }
     @Override
     public ResponseListPageableProduct filterProductsOut(RequestProductFilter filter) {
         log.info("Executing product filter in adapter with parameters: {}", filter);
         // Validaciones de negocio si son necesarias
         validateFilterRequest(filter);
         return productCategoryRepository.filterProducts(filter);
+    }
+    @Override
+    public ResponseListPageableProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId) {
+        log.info("Executing product filter in adapter with parameters: {}", filter);
+        // Validaciones de negocio si son necesarias
+        validateFilterRequest(filter);
+        return productCategoryRepository.filterProductsByCompanyId(filter, companyId);
     }
 
     @Override

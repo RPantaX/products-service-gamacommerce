@@ -62,6 +62,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
                 .productItemSKU(requestItemProduct.getProductItemSKU())
                 .productItemPrice(requestItemProduct.getProductItemPrice())
                 .productItemQuantityInStock(requestItemProduct.getProductItemQuantityInStock())
+                .companyId(Constants.getCompanyIdInSession())
                 .createdAt(Constants.getTimestamp())
                 .modifiedByUser(Constants.getUserInSession())
                 .state(Constants.STATUS_ACTIVE)
@@ -105,6 +106,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
         productItemEntity.setVariationOptionEntitySet(variationOptionEntities);
         productItemEntity.setProductItemSKU(requestItemProduct.getProductItemSKU().toUpperCase());
         productItemEntity.setProductItemPrice(requestItemProduct.getProductItemPrice());
+        productItemEntity.setCompanyId(Constants.getCompanyIdInSession());
         productItemEntity.setProductItemQuantityInStock(requestItemProduct.getProductItemQuantityInStock());
         productItemEntity.setModifiedAt(Constants.getTimestamp());
         productItemEntity.setModifiedByUser(Constants.getUserInSession());
@@ -198,6 +200,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
         }
         return responseList;
     }
+
     private String saveImageInS3(MultipartFile imagen, Long productId, Long itemProductId) {
         BucketParams bucketParams = buildBucketParams(productId, imagen, itemProductId);
         bucketUtil.addFile(bucketParams);
