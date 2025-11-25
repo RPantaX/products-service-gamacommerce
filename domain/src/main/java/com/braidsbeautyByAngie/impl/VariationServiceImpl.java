@@ -39,4 +39,9 @@ public class VariationServiceImpl implements VariationServiceIn {
     public List<VariationDTO> listVariationIn() {
         return variationServiceOut.listVariationOut();
     }
+
+    @Override
+    public List<VariationDTO> listVariationByCompanyIdIn(Long companyId) {
+        return variationServiceOut.listVariationByCompanyIdOut(companyId);
+    }
 }

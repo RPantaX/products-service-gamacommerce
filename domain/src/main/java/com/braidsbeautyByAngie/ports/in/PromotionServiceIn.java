@@ -19,6 +19,8 @@ public interface PromotionServiceIn {
     PromotionDTO deletePromotionIn(Long promotionId);
 
     ResponseListPageablePromotion listPromotionByPageIn(int pageNumber, int pageSize, String orderBy, String sortDir);
+    ResponseListPageablePromotion listPromotionByPageAndCompanyIdIn(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId);
     List<PromotionDTO> listPromotionIn();
+    List<PromotionDTO> listPromotionByCompanyIdIn(Long companyId);
     Optional<PromotionDTO> findPromotionByNameIn(String promotionName);
 }

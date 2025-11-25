@@ -7,8 +7,8 @@ import com.braidsbeautyByAngie.entity.VariationEntity;
 import com.braidsbeautyByAngie.mapper.VariationMapper;
 import com.braidsbeautyByAngie.ports.out.VariationServiceOut;
 import com.braidsbeautyByAngie.repository.VariationRepository;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.Constants;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ValidateUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.Constants;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,6 +41,7 @@ public class VariationAdapter implements VariationServiceOut {
         validateVariationName(requestVariation.getVariationName(), variationEntity);
 
         variationEntity.setVariationName(requestVariation.getVariationName());
+        variationEntity.setCompanyId(com.braidsbeautyByAngie.aggregates.constants.Constants.getCompanyIdInSession());
         variationEntity.setModifiedByUser(com.braidsbeautyByAngie.aggregates.constants.Constants.getUserInSession());
         variationEntity.setModifiedAt(Constants.getTimestamp());
 
@@ -80,10 +81,18 @@ public class VariationAdapter implements VariationServiceOut {
         log.info("Total variations fetched: {}", variationEntityList.size());
         return variationEntityList.stream().map(variationMapper::mapVariationEntityToDto).toList();
     }
+    @Override
+    public List<VariationDTO> listVariationByCompanyIdOut(Long companyId) {
+        log.info("Fetching all variations");
+        List<VariationEntity> variationEntityList = variationRepository.findAllVariationsWithOptionsAndCompanyId(com.braidsbeautyByAngie.aggregates.constants.Constants.getCompanyIdInSession());
+        log.info("Total variations fetched: {}", variationEntityList.size());
+        return variationEntityList.stream().map(variationMapper::mapVariationEntityToDto).toList();
+    }
 
     private VariationEntity buildVariationEntity(RequestVariation requestVariation) {
         return VariationEntity.builder()
                 .variationName(requestVariation.getVariationName())
+                .companyId(com.braidsbeautyByAngie.aggregates.constants.Constants.getCompanyIdInSession())
                 .state(Constants.STATUS_ACTIVE)
                 .createdAt(Constants.getTimestamp())
                 .modifiedByUser(com.braidsbeautyByAngie.aggregates.constants.Constants.getUserInSession())

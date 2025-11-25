@@ -12,4 +12,5 @@ public interface VariationServiceOut {
     VariationDTO deleteVariationOut(Long variationId);
     VariationDTO findVariationByIdOut(Long variationId);
     List<VariationDTO> listVariationOut();
+    List<VariationDTO> listVariationByCompanyIdOut(Long companyId);
 }

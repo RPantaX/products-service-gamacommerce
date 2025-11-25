@@ -21,8 +21,10 @@ public class VariationEntity {
     @Column(name = "Variation_ID", nullable = false)
     private Long variationId;
 
-    @Column(name = "Variation_Name", nullable = false, unique = true)
+    @Column(name = "Variation_Name", nullable = false)
     private String variationName;
+    @Column(name = "Company_ID", nullable = false)
+    private Long companyId;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "Product_Category_ID")

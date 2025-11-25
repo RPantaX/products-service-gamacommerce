@@ -21,7 +21,7 @@ public class ProductEntity {
     @Column(name = "Product_ID", nullable = false)
     private Long productId;
 
-    @Column(name = "Product_Name", nullable = false, unique = true)
+    @Column(name = "Product_Name", nullable = false)
     private String productName;
 
     @Column(name = "Product_Description", nullable = true)
@@ -29,6 +29,8 @@ public class ProductEntity {
 
     @Column(name = "Product_Image", nullable = true)
     private String productImage;
+    @Column(name = "Company_ID", nullable = false)
+    private Long companyId;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "Product_Category_ID")

@@ -6,8 +6,8 @@ import com.braidsbeautyByAngie.aggregates.response.products.ResponseItemProduct;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductItemDetail;
 import com.braidsbeautyByAngie.ports.in.ItemProductServiceIn;
 import com.braidsbeautyByAngie.ports.out.ItemProductServiceOut;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.dto.Product;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.events.ProductReservedEvent;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.dto.Product;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.events.ProductReservedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

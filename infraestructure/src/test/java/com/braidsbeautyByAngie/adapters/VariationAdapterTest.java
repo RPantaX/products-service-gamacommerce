@@ -9,8 +9,8 @@ import com.braidsbeautyByAngie.entity.VariationOptionEntity;
 import com.braidsbeautyByAngie.mapper.VariationMapper;
 import com.braidsbeautyByAngie.repository.VariationRepository;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.Constants;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ValidateUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.Constants;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ValidateUtil;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -26,8 +26,14 @@ public interface PromotionRepository extends JpaRepository<PromotionEntity, Long
     @Query(value = "SELECT p FROM PromotionEntity p WHERE p.state = true")
     Page<PromotionEntity> findAllByStateTrueAmdPageable(Pageable pageable);
 
+    @Query(value = "SELECT p FROM PromotionEntity p WHERE p.state = true AND p.companyId = :companyId")
+    Page<PromotionEntity> findAllByStateTrueAndCompanyIdAndPageable(Pageable pageable, Long companyId);
+
     @Query(value = "SELECT p FROM PromotionEntity p WHERE p.state = true")
     List<PromotionEntity> findAllByStateTrue();
+
+    @Query(value = "SELECT p FROM PromotionEntity p WHERE p.state = true AND p.companyId = :companyId")
+    List<PromotionEntity> findAllByStateTrueAndCompanyId(Long companyId);
 
     Optional<PromotionEntity> findByPromotionNameAndStateTrue(String promotionName);
 }

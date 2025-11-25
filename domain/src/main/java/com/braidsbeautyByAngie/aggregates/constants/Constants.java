@@ -1,7 +1,7 @@
 package com.braidsbeautyByAngie.aggregates.constants;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.aws.IBucketUtil;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.BucketParams;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.BucketParams;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +41,10 @@ public class Constants {
         String username = request.getHeader("X-Username");
         String userId = request.getHeader("X-User-Id");
         return username + " - " + userId;
+    }
+    public static Long getCompanyIdInSession() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        return request.getHeader("X-companyId") != null ? Long.parseLong(request.getHeader("X-companyId")) : null;
     }
     public static void deleteOldImageFromS3(String imageUrl, IBucketUtil bucketUtil, String bucketName) {
         try {

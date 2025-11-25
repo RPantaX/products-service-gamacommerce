@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ApiResponse;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ApiResponse;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -27,6 +27,11 @@ public class VariationController {
     public ApiResponse listVariations() {
         return ApiResponse.ok("List of variations retrieved successfully",
                 variationServiceIn.listVariationIn());
+    }
+    @GetMapping("/list/company/{companyId}")
+    public ApiResponse listVariationsByCompanyId(@PathVariable(name = "companyId") Long companyId) {
+        return ApiResponse.ok("List of variations retrieved successfully",
+                variationServiceIn.listVariationByCompanyIdIn(companyId));
     }
 
     @GetMapping(value = "/{variationId}")

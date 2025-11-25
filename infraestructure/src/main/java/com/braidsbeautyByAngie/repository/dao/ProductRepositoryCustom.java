@@ -5,4 +5,5 @@ import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageable
 
 public interface ProductRepositoryCustom {
      ResponseListPageableProduct filterProducts(RequestProductFilter filter);
+     ResponseListPageableProduct filterProductsByCompanyId(RequestProductFilter filter, Long companyId);
 }

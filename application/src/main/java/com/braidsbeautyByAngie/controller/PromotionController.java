@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ApiResponse;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ApiResponse;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -36,6 +36,16 @@ public class PromotionController {
         return ResponseEntity.ok(ApiResponse.ok("List of promotions retrieved successfully",
                 promotionService.listPromotionByPageIn(pageNo, pageSize, sortBy, sortDir)));
     }
+    @Operation(summary = "List all promotions by companyId")
+    @GetMapping("/list/pageable/company/{companyId}")
+    public ResponseEntity<ApiResponse> listPromotionByCompanyIdPageableList(@RequestParam(value = "pageNo", defaultValue = Constants.NUM_PAG_BY_DEFECT, required = false) int pageNo,
+                                                                 @RequestParam(value = "pageSize", defaultValue = Constants.SIZE_PAG_BY_DEFECT, required = false) int pageSize,
+                                                                 @RequestParam(value = "sortBy", defaultValue = Constants.ORDER_BY_DEFECT_ALL, required = false) String sortBy,
+                                                                 @RequestParam(value = "sortDir", defaultValue = Constants.ORDER_DIRECT_BY_DEFECT, required = false) String sortDir,
+                                                                            @PathVariable(name = "companyId") Long companyId){
+        return ResponseEntity.ok(ApiResponse.ok("List of promotions retrieved successfully",
+                promotionService.listPromotionByPageAndCompanyIdIn(pageNo, pageSize, sortBy, sortDir, companyId)));
+    }
     @Operation(summary = "List promotion by id")
     @GetMapping(value = "/{promotionId}")
     public ResponseEntity<ApiResponse> listPromotionById(@PathVariable(name = "promotionId") Long promotionId){
@@ -47,6 +57,11 @@ public class PromotionController {
     public ResponseEntity<ApiResponse> listPromotion(){
         return ResponseEntity.ok(ApiResponse.ok("List of promotions retrieved successfully",
                 promotionService.listPromotionIn()));
+    }
+    @GetMapping(value = "/list/company/{companyId}")
+    public ResponseEntity<ApiResponse> listPromotion(@PathVariable(name = "companyId") Long companyId){
+        return ResponseEntity.ok(ApiResponse.ok("List of promotions retrieved successfully",
+                promotionService.listPromotionByCompanyIdIn(companyId)));
     }
     @GetMapping(value = "/findByName/{promotionName}")
     public ResponseEntity<ApiResponse> findPromotionByName(@PathVariable(name = "promotionName") String promotionName){

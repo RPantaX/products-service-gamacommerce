@@ -14,7 +14,7 @@ public class VariationDTO {
     private Long variationId;
 
     private String variationName;
-
+    private Long companyId;
     List<VariationOptionDTO> variationOptionEntities;
 }
 

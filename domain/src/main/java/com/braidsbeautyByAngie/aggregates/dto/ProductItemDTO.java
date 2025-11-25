@@ -3,7 +3,6 @@ package com.braidsbeautyByAngie.aggregates.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +22,8 @@ public class ProductItemDTO {
     private BigDecimal productItemPrice;
 
     private Long orderLineId;
+
+    private Long companyId;
 
     private Long shoppingCartItemId;
 }

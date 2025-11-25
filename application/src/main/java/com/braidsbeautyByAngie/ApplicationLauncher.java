@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @ComponentScan({
         "com.braidsbeautyByAngie.*",
-        "com.braidsbeautybyangie.sagapatternspringboot.*"  // Incluir el paquete de core-t
+        "pe.com.gamacommerce.corelibraryservicegamacommerce.*"  // Incluir el paquete de core-t
 })
 @EntityScan("com.braidsbeautyByAngie.*")
 @ImportAutoConfiguration({FeignAutoConfiguration.class})

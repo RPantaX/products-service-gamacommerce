@@ -13,11 +13,11 @@ import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ItemProductServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.aws.IBucketUtil;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.dto.Product;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.BucketParams;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.GlobalErrorEnum;
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ValidateUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.dto.Product;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.BucketParams;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.GlobalErrorEnum;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +62,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
                 .productItemSKU(requestItemProduct.getProductItemSKU())
                 .productItemPrice(requestItemProduct.getProductItemPrice())
                 .productItemQuantityInStock(requestItemProduct.getProductItemQuantityInStock())
+                .companyId(Constants.getCompanyIdInSession())
                 .createdAt(Constants.getTimestamp())
                 .modifiedByUser(Constants.getUserInSession())
                 .state(Constants.STATUS_ACTIVE)
@@ -105,6 +106,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
         productItemEntity.setVariationOptionEntitySet(variationOptionEntities);
         productItemEntity.setProductItemSKU(requestItemProduct.getProductItemSKU().toUpperCase());
         productItemEntity.setProductItemPrice(requestItemProduct.getProductItemPrice());
+        productItemEntity.setCompanyId(Constants.getCompanyIdInSession());
         productItemEntity.setProductItemQuantityInStock(requestItemProduct.getProductItemQuantityInStock());
         productItemEntity.setModifiedAt(Constants.getTimestamp());
         productItemEntity.setModifiedByUser(Constants.getUserInSession());
@@ -198,6 +200,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
         }
         return responseList;
     }
+
     private String saveImageInS3(MultipartFile imagen, Long productId, Long itemProductId) {
         BucketParams bucketParams = buildBucketParams(productId, imagen, itemProductId);
         bucketUtil.addFile(bucketParams);
@@ -206,11 +209,11 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     }
     public BucketParams buildBucketParams(Long productId, MultipartFile imagen, Long itemProductId){
         String fileName = "itemProduct-" + productId + "-"+itemProductId+ "-" + System.currentTimeMillis();
-
+        Long companyId = Constants.getCompanyIdInSession();
         // Para operaciones de eliminación (cuando imagen es null)
         if (imagen == null) {
             // Construir el path basado en el patrón de nombres que usamos
-            String filePath = "itemProduct/" + fileName; // Sin extensión para eliminación
+            String filePath = "companies/" + companyId + "/itemProduct/" + fileName; // Sin extensión para eliminación
             return BucketParams.builder()
                     .bucketName(bucketName)
                     .filePath(filePath)
@@ -226,7 +229,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
             return BucketParams.builder()
                     .file(imagen)
                     .bucketName(bucketName)
-                    .filePath("itemProduct/" + fileName)
+                    .filePath("companies/" + companyId + "/itemProduct/" + fileName)
                     .build();
         }
     }

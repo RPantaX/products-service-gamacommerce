@@ -44,8 +44,18 @@ public class PromotionServiceImpl implements PromotionServiceIn {
     }
 
     @Override
+    public ResponseListPageablePromotion listPromotionByPageAndCompanyIdIn(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId) {
+        return promotionServiceOut.listPromotionByPageAndCompanyIdOut(pageNumber, pageSize, orderBy, sortDir, companyId);
+    }
+
+    @Override
     public List<PromotionDTO> listPromotionIn() {
         return promotionServiceOut.listPromotionOut();
+    }
+
+    @Override
+    public List<PromotionDTO> listPromotionByCompanyIdIn(Long companyId) {
+        return promotionServiceOut.listPromotionByCompanyIdOut(companyId);
     }
 
     @Override

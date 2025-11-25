@@ -18,6 +18,8 @@ public interface PromotionServiceOut {
     PromotionDTO deletePromotionOut(Long promotionId);
 
     ResponseListPageablePromotion listPromotionByPageOut(int pageNumber, int pageSize, String orderBy, String sortDir);
+    ResponseListPageablePromotion listPromotionByPageAndCompanyIdOut(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId);
     List<PromotionDTO> listPromotionOut();
+    List<PromotionDTO> listPromotionByCompanyIdOut(Long companyId);
     Optional<PromotionDTO> findPromotionByNameOut(String promotionName);
 }

@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.braidsbeautybyangie.sagapatternspringboot.aggregates.aggregates.util.ApiResponse;
+import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.ApiResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,6 +44,16 @@ public class ProductController {
                                                                                 @RequestParam(value = "sortDir", defaultValue = Constants.ORDER_DIRECT_BY_DEFECT, required = false) String sortDir){
         return ResponseEntity.ok(ApiResponse.ok("List of products retrieved successfully",
                 productServiceIn.listProductPageableIn(pageNo, pageSize, sortBy, sortDir)));
+    }
+    @GetMapping("/list/company/{companyId}")
+    @RequireRole // Solo requiere estar autenticado
+    public ResponseEntity<ApiResponse> listProductByCompanyIdPageableList(@RequestParam(value = "pageNo", defaultValue = Constants.NUM_PAG_BY_DEFECT, required = false) int pageNo,
+                                                               @RequestParam(value = "pageSize", defaultValue = Constants.SIZE_PAG_BY_DEFECT, required = false) int pageSize,
+                                                               @RequestParam(value = "sortBy", defaultValue = Constants.ORDER_BY_DEFECT_ALL, required = false) String sortBy,
+                                                               @RequestParam(value = "sortDir", defaultValue = Constants.ORDER_DIRECT_BY_DEFECT, required = false) String sortDir,
+                                                                          @PathVariable(name = "companyId") Long companyId){
+        return ResponseEntity.ok(ApiResponse.ok("List of products retrieved successfully",
+                productServiceIn.listProductPageableByCompanyIdIn(pageNo, pageSize, sortBy, sortDir, companyId)));
     }
 
     @GetMapping(value = "/{productId}")
@@ -75,6 +85,16 @@ public class ProductController {
             @RequestBody RequestProductFilter filter) {
 
         ResponseListPageableProduct response = productServiceIn.filterProductsIn(filter);
+
+        return ResponseEntity.ok(ApiResponse.ok("Products with filter", response) );
+    }
+    @PostMapping("/filter/company/{companyId}")
+    public ResponseEntity<ApiResponse> filterProductsByCompanyId(
+            @RequestBody RequestProductFilter filter,
+            @PathVariable(name = "companyId") Long companyId
+            ) {
+
+        ResponseListPageableProduct response = productServiceIn.filterProductsByCompanyIdOut(filter, companyId);
 
         return ResponseEntity.ok(ApiResponse.ok("Products with filter", response) );
     }
