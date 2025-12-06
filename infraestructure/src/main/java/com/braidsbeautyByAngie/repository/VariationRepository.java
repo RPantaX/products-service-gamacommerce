@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface VariationRepository extends JpaRepository<VariationEntity, Long> {
     boolean existsByVariationName(String name);
 
-    Optional<VariationEntity> findByVariationName(String name);
+    List<VariationEntity> findByVariationName(String name);
 
     @Query(value = "SELECT v FROM VariationEntity v WHERE v.state = true")
     List<VariationEntity> findAllByStateTrue();

@@ -277,17 +277,17 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     private Set<VariationOptionEntity> saveVariations(List<RequestVariationName> requestVariationNameList) {
         return requestVariationNameList.stream().map(
                 requestVariationName -> {
-                    VariationEntity variationEntity = variationRepository.findByVariationName(requestVariationName.getVariationName()).orElse(null);
+                    List<VariationEntity> variationEntity = variationRepository.findByVariationName(requestVariationName.getVariationName());
                     // Check if the variation option already exists
-                    if( variationEntity == null) {
+                    if( variationEntity.isEmpty()) {
                         log.error("The variation does not exist.");
-                        ValidateUtil.requerido(variationEntity, ProductsErrorEnum.VARIATION_NOT_FOUND_ERP00029);
+                        ValidateUtil.requerido(variationEntity.get(0), ProductsErrorEnum.VARIATION_NOT_FOUND_ERP00029);
                     }
                     if (variationOptionRepository.existsByVariationOptionValue(requestVariationName.getVariationOptionValue())) {
-                        return variationOptionRepository.findByVariationOptionValue(requestVariationName.getVariationOptionValue()).get();
+                        return variationOptionRepository.findByVariationOptionValue(requestVariationName.getVariationOptionValue()).get(0);
                     }
                     VariationOptionEntity variationOptionEntity = VariationOptionEntity.builder()
-                            .variationEntity(variationEntity)
+                            .variationEntity(variationEntity.get(0))
                             .variationOptionValue(requestVariationName.getVariationOptionValue())
                             .state(Constants.STATUS_ACTIVE)
                             .createdAt(Constants.getTimestamp())
