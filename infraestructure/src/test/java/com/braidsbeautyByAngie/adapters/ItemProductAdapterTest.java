@@ -149,7 +149,7 @@ class ItemProductAdapterTest {
 
             when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
             when(productRepository.findById(1L)).thenReturn(Optional.of(productEntity));
-            when(variationRepository.findByVariationName("Color")).thenReturn(Optional.of(variationEntity));
+            when(variationRepository.findByVariationName("Color")).thenReturn(List.of(variationEntity));
             when(variationOptionRepository.existsByVariationOptionValue("Red")).thenReturn(false);
             when(variationOptionRepository.save(any(VariationOptionEntity.class))).thenReturn(variationOptionEntity);
             when(productItemRepository.save(any(ProductItemEntity.class))).thenReturn(productItemEntity);
@@ -428,7 +428,7 @@ class ItemProductAdapterTest {
         // Given
         when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
         when(productRepository.findById(1L)).thenReturn(Optional.of(productEntity));
-        when(variationRepository.findByVariationName("Color")).thenReturn(Optional.empty());
+        when(variationRepository.findByVariationName("Color")).thenReturn(List.of());
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
             validateUtilMock.when(() -> ValidateUtil.requerido(eq(null), any(ProductsErrorEnum.class)))
@@ -454,9 +454,9 @@ class ItemProductAdapterTest {
 
             when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
             when(productRepository.findById(1L)).thenReturn(Optional.of(productEntity));
-            when(variationRepository.findByVariationName("Color")).thenReturn(Optional.of(variationEntity));
+            when(variationRepository.findByVariationName("Color")).thenReturn(List.of(variationEntity));
             when(variationOptionRepository.existsByVariationOptionValue("Red")).thenReturn(true);
-            when(variationOptionRepository.findByVariationOptionValue("Red")).thenReturn(Optional.of(variationOptionEntity));
+            when(variationOptionRepository.findByVariationOptionValue("Red")).thenReturn(List.of(variationOptionEntity));
             when(productItemRepository.save(any(ProductItemEntity.class))).thenReturn(productItemEntity);
             when(productItemMapper.mapProductItemEntityToDto(productItemEntity)).thenReturn(productItemDTO);
 
@@ -523,9 +523,9 @@ class ItemProductAdapterTest {
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
             when(productRepository.existsById(1L)).thenReturn(true);
-            when(variationRepository.findByVariationName("Color")).thenReturn(Optional.of(variationEntity));
+            when(variationRepository.findByVariationName("Color")).thenReturn(List.of(variationEntity));
             when(variationOptionRepository.existsByVariationOptionValue("Red")).thenReturn(true);
-            when(variationOptionRepository.findByVariationOptionValue("Red")).thenReturn(Optional.of(variationOptionEntity));
+            when(variationOptionRepository.findByVariationOptionValue("Red")).thenReturn(List.of(variationOptionEntity));
             when(productItemRepository.save(any(ProductItemEntity.class))).thenReturn(updatedEntity);
             when(productItemMapper.mapProductItemEntityToDto(updatedEntity)).thenReturn(updatedDTO);
 

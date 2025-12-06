@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface VariationOptionRepository extends JpaRepository<VariationOptionEntity, Long> {
     boolean existsByVariationOptionValue(String name);
-    Optional<VariationOptionEntity> findByVariationOptionValue(String name);
+    List<VariationOptionEntity> findByVariationOptionValue(String name);
     List<VariationOptionEntity> findAllByVariationEntityAndStateTrue(VariationEntity variation);
 }
