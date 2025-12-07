@@ -3,9 +3,7 @@ package com.braidsbeautyByAngie.ports.in;
 import com.braidsbeautyByAngie.aggregates.dto.ProductDTO;
 import com.braidsbeautyByAngie.aggregates.request.RequestProduct;
 import com.braidsbeautyByAngie.aggregates.request.RequestProductFilter;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableProduct;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseProduct;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductFilterOptions;
+import com.braidsbeautyByAngie.aggregates.response.products.*;
 
 public interface ProductServiceIn {
 
@@ -21,7 +19,8 @@ public interface ProductServiceIn {
     ResponseListPageableProduct listProductPageableByCompanyIdIn(int pageNumber, int pageSize, String orderBy, String sortDir, Long companyId);
 
     ResponseListPageableProduct filterProductsIn(RequestProductFilter filter);
-    ResponseListPageableProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId);
+    ResponseListPageableItemProduct filterProductsByCompanyIdIn(RequestProductFilter filter, Long companyId);
+    ResponseListPageableProduct filterProductsByCompanyIdDetailIn(RequestProductFilter filter, Long companyId);
 
     ResponseProductFilterOptions getProductFilterOptionsIn();
 }

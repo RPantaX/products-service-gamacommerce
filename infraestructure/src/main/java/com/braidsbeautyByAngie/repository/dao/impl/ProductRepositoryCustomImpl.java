@@ -4,10 +4,7 @@ import com.braidsbeautyByAngie.aggregates.constants.Constants;
 import com.braidsbeautyByAngie.aggregates.dto.PromotionDTO;
 import com.braidsbeautyByAngie.aggregates.request.RequestProductFilter;
 import com.braidsbeautyByAngie.aggregates.response.categories.ResponseCategoryy;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableProduct;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseProduct;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductItemDetaill;
-import com.braidsbeautyByAngie.aggregates.response.products.ResponseVariationn;
+import com.braidsbeautyByAngie.aggregates.response.products.*;
 import com.braidsbeautyByAngie.entity.*;
 import com.braidsbeautyByAngie.mapper.PromotionMapper;
 import com.braidsbeautyByAngie.repository.dao.ProductRepositoryCustom;
@@ -447,11 +444,22 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
                         return new ResponseProductItemDetaill(
                                 item.getProductItemId(),
+                                product.getProductId(),
+                                product.getProductName(),
+                                product.getProductDescription(),
                                 item.getProductItemSKU(),
                                 item.getProductItemQuantityInStock(),
                                 item.getProductItemImage(),
                                 item.getProductItemPrice(),
-                                variations
+                                variations,
+                                ResponseCategoryy.builder()
+                                        .productCategoryId(product.getProductCategoryEntity().getProductCategoryId())
+                                        .productCategoryName(product.getProductCategoryEntity().getProductCategoryName())
+                                        .promotionDTOList(product.getProductCategoryEntity().getPromotionEntities().stream()
+                                                .map(promotionMapper::mapPromotionEntityToDto)
+                                                .collect(Collectors.toList())
+                                        )
+                                        .build()
                         );
                     })
                     .collect(Collectors.toList());
