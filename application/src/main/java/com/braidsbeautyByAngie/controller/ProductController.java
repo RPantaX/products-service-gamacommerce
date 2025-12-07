@@ -4,7 +4,9 @@ import com.braidsbeautyByAngie.aggregates.constants.Constants;
 
 import com.braidsbeautyByAngie.aggregates.request.RequestProduct;
 import com.braidsbeautyByAngie.aggregates.request.RequestProductFilter;
+import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableItemProduct;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableProduct;
+import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductItemDetaill;
 import com.braidsbeautyByAngie.auth.RequireRole;
 import com.braidsbeautyByAngie.ports.in.ProductServiceIn;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -94,7 +96,17 @@ public class ProductController {
             @PathVariable(name = "companyId") Long companyId
             ) {
 
-        ResponseListPageableProduct response = productServiceIn.filterProductsByCompanyIdOut(filter, companyId);
+        ResponseListPageableItemProduct response = productServiceIn.filterProductsByCompanyIdIn(filter, companyId);
+
+        return ResponseEntity.ok(ApiResponse.ok("Products with filter", response) );
+    }
+    @PostMapping("/filter/company/details/{companyId}")
+    public ResponseEntity<ApiResponse> filterProductsByCompanyIdDetail(
+            @RequestBody RequestProductFilter filter,
+            @PathVariable(name = "companyId") Long companyId
+    ) {
+
+        ResponseListPageableProduct response = productServiceIn.filterProductsByCompanyIdDetailIn(filter, companyId);
 
         return ResponseEntity.ok(ApiResponse.ok("Products with filter", response) );
     }

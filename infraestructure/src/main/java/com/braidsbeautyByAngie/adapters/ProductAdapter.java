@@ -255,11 +255,15 @@ public class ProductAdapter implements ProductServiceOut {
 
                 return new ResponseProductItemDetaill(
                         item.getProductItemId(),
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getProductDescription(),
                         item.getProductItemSKU(),
                         item.getProductItemQuantityInStock(),
                         item.getProductItemImage(),
                         item.getProductItemPrice(),
-                        variations
+                        variations,
+                        ResponseCategoryy.builder().build()
                 );
             }).collect(Collectors.toList());
 
@@ -333,11 +337,21 @@ public class ProductAdapter implements ProductServiceOut {
 
                 return new ResponseProductItemDetaill(
                         item.getProductItemId(),
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getProductDescription(),
                         item.getProductItemSKU(),
                         item.getProductItemQuantityInStock(),
                         item.getProductItemImage(),
                         item.getProductItemPrice(),
-                        variations
+                        variations,
+                        ResponseCategoryy.builder()
+                                        .productCategoryId(product.getProductCategoryEntity().getProductCategoryId())
+                                        .productCategoryName(product.getProductCategoryEntity().getProductCategoryName())
+                                        .promotionDTOList(product.getProductCategoryEntity().getPromotionEntities().stream()
+                                                .map(promotionMapper::mapPromotionEntityToDto)
+                                                .collect(Collectors.toList()))
+                                .build()
                 );
             }).collect(Collectors.toList());
 
@@ -370,11 +384,30 @@ public class ProductAdapter implements ProductServiceOut {
         return productCategoryRepository.filterProducts(filter);
     }
     @Override
-    public ResponseListPageableProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId) {
+    public ResponseListPageableItemProduct filterProductsByCompanyIdOut(RequestProductFilter filter, Long companyId) {
         log.info("Executing product filter in adapter with parameters: {}", filter);
         // Validaciones de negocio si son necesarias
         validateFilterRequest(filter);
-        return productCategoryRepository.filterProductsByCompanyId(filter, Constants.getCompanyIdInSession());
+        ResponseListPageableProduct emptyResponse = productCategoryRepository.filterProductsByCompanyId(filter, Constants.getCompanyIdInSession());
+        List <ResponseProductItemDetaill> emptyItem = emptyResponse.getResponseProductList().stream().flatMap(product ->
+                product.getResponseProductItemDetails().stream()
+        ).toList();
+        return ResponseListPageableItemProduct.builder()
+                .responseProductList(emptyItem)
+                .end(emptyResponse.isEnd())
+                .pageNumber(emptyResponse.getPageNumber())
+                .pageSize(emptyResponse.getPageSize())
+                .totalElements(emptyResponse.getTotalElements())
+                .totalPages(emptyResponse.getTotalPages())
+                .build();
+    }
+
+    @Override
+    public ResponseListPageableProduct filterProductsByCompanyIdDetailOut(RequestProductFilter filter, Long companyId) {
+        log.info("Executing product filter in adapter with parameters: {}", filter);
+        // Validaciones de negocio si son necesarias
+        validateFilterRequest(filter);
+        return productCategoryRepository.filterProducts(filter);
     }
 
     @Override
