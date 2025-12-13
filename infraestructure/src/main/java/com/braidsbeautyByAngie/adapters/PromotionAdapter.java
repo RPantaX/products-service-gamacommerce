@@ -158,6 +158,13 @@ public class PromotionAdapter implements PromotionServiceOut {
         return Optional.of(promotionMapper.mapPromotionEntityToDto(promotionEntity));
     }
 
+    @Override
+    public void deleteAllByCompanyIdOut(Long companyId) {
+        log.info("Deleting all promotions for company ID: {}", companyId);
+        promotionRepository.deleteAllByCompanyId(companyId);
+        log.info("All promotions for company ID {} deleted successfully", companyId);
+    }
+
     // Helper methods for better organization and code readability
     private PromotionEntity buildPromotionEntity(RequestPromotion requestPromotion) {
         return PromotionEntity.builder()

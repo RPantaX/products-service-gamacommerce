@@ -22,4 +22,5 @@ public interface PromotionServiceOut {
     List<PromotionDTO> listPromotionOut();
     List<PromotionDTO> listPromotionByCompanyIdOut(Long companyId);
     Optional<PromotionDTO> findPromotionByNameOut(String promotionName);
+    void deleteAllByCompanyIdOut(Long companyId);
 }

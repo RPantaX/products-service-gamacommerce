@@ -65,4 +65,9 @@ public class ProductsServiceImpl implements ProductServiceIn {
         return productServiceOut.getProductFilterOptionsOut();
     }
 
+    @Override
+    public void deleteProductsByCompanyIdIn(Long companyId) {
+        productServiceOut.deleteProductsByCompanyIdOut(companyId);
+    }
+
 }

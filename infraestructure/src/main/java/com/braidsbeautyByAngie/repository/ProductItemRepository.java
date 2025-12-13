@@ -1,7 +1,9 @@
 package com.braidsbeautyByAngie.repository;
 
 import com.braidsbeautyByAngie.entity.ProductItemEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -50,4 +52,10 @@ public interface ProductItemRepository extends JpaRepository<ProductItemEntity, 
 
     @Query("SELECT MIN(pi.productItemPrice), MAX(pi.productItemPrice) FROM ProductItemEntity pi WHERE pi.state = true")
     List<Object[]> findPriceRange();
+    //deleteByCompanyId
+    @Modifying
+// 2. Añadir @Transactional para asegurar que la operación DELETE se ejecute dentro de una transacción.
+    @Transactional
+    @Query("DELETE FROM ProductItemEntity pi WHERE pi.companyId = :companyId")
+    void deleteByCompanyId(@Param("companyId") Long companyId);
 }

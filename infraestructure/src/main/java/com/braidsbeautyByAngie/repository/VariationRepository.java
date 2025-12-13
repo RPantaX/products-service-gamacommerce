@@ -1,7 +1,9 @@
 package com.braidsbeautyByAngie.repository;
 
 import com.braidsbeautyByAngie.entity.VariationEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -25,4 +27,10 @@ public interface VariationRepository extends JpaRepository<VariationEntity, Long
 
     @Query("SELECT v FROM VariationEntity v LEFT JOIN FETCH v.variationOptionEntities vo WHERE v.state = true AND v.companyId = :companyId")
     List<VariationEntity> findAllVariationsWithOptionsAndCompanyId(Long companyId);
+    //delete all by company id
+    @Modifying
+// 2. Añadir @Transactional para asegurar que la operación DELETE se ejecute dentro de una transacción.
+    @Transactional
+    @Query("DELETE FROM VariationEntity v WHERE v.companyId = :companyId")
+    void deleteAllByCompanyId(Long companyId);
 }

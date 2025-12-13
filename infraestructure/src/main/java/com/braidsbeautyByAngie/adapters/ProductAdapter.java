@@ -10,6 +10,7 @@ import com.braidsbeautyByAngie.aggregates.response.products.*;
 import com.braidsbeautyByAngie.entity.*;
 import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ProductServiceOut;
+import com.braidsbeautyByAngie.ports.out.PromotionServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
@@ -47,6 +48,9 @@ public class ProductAdapter implements ProductServiceOut {
     private final VariationRepository variationRepository;
     private final VariationOptionRepository variationOptionRepository;
     private final IBucketUtil bucketUtil;
+
+    private final PromotionServiceOut promotionServiceOut;
+
     @Value("${BUCKET_NAME_USUARIOS}")
     private String bucketName;
 
@@ -299,14 +303,17 @@ public class ProductAdapter implements ProductServiceOut {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(Constants.getCompanyIdInSession() ,pageable);
-
+        if (productPage.isEmpty()) {
+            log.warn("No products found for company ID: {}", companyId);
+            return new ResponseListPageableProduct(Collections.emptyList(), pageNumber, pageSize, 0, 0, true);
+        }
         // Convertir entidades a DTOs
         List<ResponseProduct> responseProductList = productPage.getContent().stream().map(product -> {
 
             ProductEntity productEntity = productRepository.findProductByProductIdWithStateTrue(product.getProductId()).orElse(null);
             if (productEntity == null) {
                 log.error("Product category is null for product ID: {}", product.getProductId());
-                ValidateUtil.evaluar(false, GlobalErrorEnum.CATEGORY_NOT_FOUND_ERC00008);
+                ValidateUtil.evaluar(false, ProductsErrorEnum.PRODUCT_NOT_FOUND_ERP00001);
             }
             ProductCategoryEntity productCategory = productCategoryRepository.findProductCategoryIdAndStateTrue(productEntity.getProductCategoryEntity().getProductCategoryId()).orElse(null);
             if (productCategory == null) {
@@ -448,6 +455,17 @@ public class ProductAdapter implements ProductServiceOut {
             throw new RuntimeException("Error al obtener opciones de filtro", e);
         }
     }
+
+    @Override
+    public void deleteProductsByCompanyIdOut(Long companyId) {
+        log.info("Deleting products for company ID: {}", companyId);
+        promotionServiceOut.deleteAllByCompanyIdOut(companyId);
+        variationRepository.deleteAllByCompanyId(companyId);
+        productItemRepository.deleteByCompanyId(companyId);
+        productRepository.deleteByCompanyId(companyId);
+        log.info("Products deleted for company ID: {}", companyId);
+    }
+
     private int getProductCountByCategory(Long categoryId) {
         return productRepository.countByCategoryIdAndStateTrue(categoryId);
     }

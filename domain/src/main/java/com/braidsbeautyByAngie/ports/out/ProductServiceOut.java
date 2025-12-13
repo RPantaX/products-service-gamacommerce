@@ -23,4 +23,5 @@ public interface ProductServiceOut {
     ResponseListPageableProduct filterProductsByCompanyIdDetailOut(RequestProductFilter filter, Long companyId);
 
     ResponseProductFilterOptions getProductFilterOptionsOut();
+    void deleteProductsByCompanyIdOut(Long companyId);
 }

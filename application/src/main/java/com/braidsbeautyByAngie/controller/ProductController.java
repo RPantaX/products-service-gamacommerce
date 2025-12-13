@@ -147,4 +147,12 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.ok("Filter options retrieved successfully",
                 productServiceIn.getProductFilterOptionsIn()));
     }
+    //delete all products by companyId
+    @DeleteMapping("/company/{companyId}")
+    @RequireRole(value = {"ROLE_ADMIN", "ROLE_SUPER_ADMIN"}, requireAll = false) // Admin Y Super Admin
+    public ResponseEntity<ApiResponse> deleteAllProductsByCompanyId(@PathVariable(name = "companyId") Long companyId){
+        productServiceIn.deleteProductsByCompanyIdIn(companyId);
+        return ResponseEntity.ok(ApiResponse.ok("All products deleted for companyId: " + companyId,
+                true));
+    }
 }
