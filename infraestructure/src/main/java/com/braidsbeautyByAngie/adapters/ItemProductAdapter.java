@@ -13,6 +13,10 @@ import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ItemProductServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.dto.Product;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.BucketParams;
@@ -169,6 +173,28 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     @Override
     public void cancelProductReservationOut(Long shopOrderId, List<Product> productsToCancel) {
         updateStock(productsToCancel, 1);
+    }
+
+    @Override
+    public ResponseListPageableItemProduct2 listItemProductPageableOut(int pageNumber, int pageSize, String orderBy, String sortDir) {
+        log.info("Listing itemProducts pageable: pageNumber={}, pageSize={}, orderBy={}, sortDir={}", pageNumber, pageSize, orderBy, sortDir);
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(orderBy).ascending() :
+                Sort.by(orderBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<ProductItemEntity> productItemtPage = productItemRepository.findAllByStateTrueAndPageable(pageable);
+
+        List<ResponseProductItemDetail> responseProductList = productItemtPage.getContent().stream().map(itemProduct -> {
+            List<Object[]> results = productItemRepository.findProductItemWithVariations(itemProduct.getProductItemId());
+            return buildProductItemDetail(itemProduct.getProductItemId(), results);
+        }).collect(Collectors.toList());
+        return ResponseListPageableItemProduct2.builder()
+                .responseProductList(responseProductList)
+                .pageNumber(productItemtPage.getNumber())
+                .pageSize(productItemtPage.getSize())
+                .totalElements(productItemtPage.getTotalElements())
+                .totalPages(productItemtPage.getTotalPages())
+                .end(productItemtPage.isLast())
+                .build();
     }
 
     @Override

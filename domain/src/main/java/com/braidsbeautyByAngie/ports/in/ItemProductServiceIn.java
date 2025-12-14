@@ -3,6 +3,8 @@ package com.braidsbeautyByAngie.ports.in;
 import com.braidsbeautyByAngie.aggregates.dto.ProductItemDTO;
 import com.braidsbeautyByAngie.aggregates.request.RequestItemProduct;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseItemProduct;
+import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableItemProduct;
+import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableItemProduct2;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductItemDetail;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.dto.Product;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.events.ProductReservedEvent;
@@ -22,7 +24,7 @@ public interface ItemProductServiceIn {
     ProductItemDTO deleteItemProductIn(Long itemProductId);
 
     List<Product> reserveProductIn(Long shopOrderId, List<Product> desiredProducts);
-
+    ResponseListPageableItemProduct2 listItemProductPageableIn(int pageNumber, int pageSize, String orderBy, String sortDir);
     void cancelProductReservationIn(Long shopOrderId, List<Product> productsToCancel);
     List<ResponseProductItemDetail> listItemProductsByIdsIn(List<Long> itemProductIds);
 }

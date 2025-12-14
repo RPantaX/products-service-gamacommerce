@@ -3,6 +3,8 @@ package com.braidsbeautyByAngie.impl;
 import com.braidsbeautyByAngie.aggregates.dto.ProductItemDTO;
 import com.braidsbeautyByAngie.aggregates.request.RequestItemProduct;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseItemProduct;
+import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableItemProduct;
+import com.braidsbeautyByAngie.aggregates.response.products.ResponseListPageableItemProduct2;
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseProductItemDetail;
 import com.braidsbeautyByAngie.ports.in.ItemProductServiceIn;
 import com.braidsbeautyByAngie.ports.out.ItemProductServiceOut;
@@ -44,6 +46,11 @@ public class ItemProductServiceImpl implements ItemProductServiceIn {
     @Override
     public List<Product> reserveProductIn(Long shopOrderId, List<Product> desiredProducts) {
         return itemProductServiceOut.reserveProductOut(shopOrderId, desiredProducts);
+    }
+
+    @Override
+    public ResponseListPageableItemProduct2 listItemProductPageableIn(int pageNumber, int pageSize, String orderBy, String sortDir) {
+        return itemProductServiceOut.listItemProductPageableOut(pageNumber, pageSize, orderBy, sortDir);
     }
 
     @Override
