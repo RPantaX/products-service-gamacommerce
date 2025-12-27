@@ -117,7 +117,7 @@ class CategoryAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productCategoryRepository.existsByProductCategoryName("Electronics")).thenReturn(false);
+            when(productCategoryRepository.existsByProductCategoryNameAndStateTrue("Electronics")).thenReturn(false);
             when(promotionRepository.findAllByPromotionIdAndStateTrue(anyList())).thenReturn(promotions);
             when(productCategoryRepository.save(any(ProductCategoryEntity.class))).thenReturn(categoryEntity);
             when(productCategoryMapper.mapCategoryEntityToDTO(categoryEntity)).thenReturn(categoryDTO);
@@ -130,7 +130,7 @@ class CategoryAdapterTest {
             assertEquals("Electronics", result.getCategoryName());
             assertEquals(1L, result.getCategoryId());
 
-            verify(productCategoryRepository).existsByProductCategoryName("Electronics");
+            verify(productCategoryRepository).existsByProductCategoryNameAndStateTrue("Electronics");
             verify(promotionRepository).findAllByPromotionIdAndStateTrue(requestCategory.getPromotionListId());
             verify(productCategoryRepository).save(any(ProductCategoryEntity.class));
             verify(productCategoryMapper).mapCategoryEntityToDTO(categoryEntity);
@@ -150,7 +150,7 @@ class CategoryAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productCategoryRepository.existsByProductCategoryName("Electronics")).thenReturn(false);
+            when(productCategoryRepository.existsByProductCategoryNameAndStateTrue("Electronics")).thenReturn(false);
             when(productCategoryRepository.save(any(ProductCategoryEntity.class))).thenReturn(categoryEntity);
             when(productCategoryMapper.mapCategoryEntityToDTO(categoryEntity)).thenReturn(categoryDTO);
 
@@ -169,7 +169,7 @@ class CategoryAdapterTest {
     @DisplayName("Should throw exception when category name already exists")
     void createCategoryOut_WithExistingCategoryName_ShouldThrowException() {
         // Given
-        when(productCategoryRepository.existsByProductCategoryName("Electronics")).thenReturn(true);
+        when(productCategoryRepository.existsByProductCategoryNameAndStateTrue("Electronics")).thenReturn(true);
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
             validateUtilMock.when(() -> ValidateUtil.evaluar(eq(true), any(GlobalErrorEnum.class)))
@@ -180,7 +180,7 @@ class CategoryAdapterTest {
                 categoryAdapter.createCategoryOut(requestCategory);
             });
 
-            verify(productCategoryRepository).existsByProductCategoryName("Electronics");
+            verify(productCategoryRepository).existsByProductCategoryNameAndStateTrue("Electronics");
             verify(productCategoryRepository, never()).save(any());
         }
     }
@@ -211,7 +211,7 @@ class CategoryAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productCategoryRepository.existsByProductCategoryName("Smartphones")).thenReturn(false);
+            when(productCategoryRepository.existsByProductCategoryNameAndStateTrue("Smartphones")).thenReturn(false);
             when(productCategoryRepository.findProductCategoryIdAndStateTrue(1L)).thenReturn(Optional.of(parentCategory));
             when(productCategoryRepository.save(any(ProductCategoryEntity.class))).thenReturn(subCategoryEntity);
             when(productCategoryMapper.mapCategoryEntityToDTO(subCategoryEntity)).thenReturn(subCategoryDTO);
@@ -233,7 +233,7 @@ class CategoryAdapterTest {
     @DisplayName("Should throw exception when parent category not found for subcategory")
     void createSubCategoryOut_WithInvalidParentId_ShouldThrowException() {
         // Given
-        when(productCategoryRepository.existsByProductCategoryName("Smartphones")).thenReturn(false);
+        when(productCategoryRepository.existsByProductCategoryNameAndStateTrue("Smartphones")).thenReturn(false);
         when(productCategoryRepository.findProductCategoryIdAndStateTrue(1L)).thenReturn(Optional.empty());
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
@@ -454,7 +454,7 @@ class CategoryAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productCategoryRepository.existsByProductCategoryName("Electronics")).thenReturn(false);
+            when(productCategoryRepository.existsByProductCategoryNameAndStateTrue("Electronics")).thenReturn(false);
             when(productCategoryRepository.save(any(ProductCategoryEntity.class))).thenReturn(categoryEntity);
             when(productCategoryMapper.mapCategoryEntityToDTO(categoryEntity)).thenReturn(categoryDTO);
 

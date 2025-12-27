@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface PromotionRepository extends JpaRepository<PromotionEntity, Long> {
-    boolean existsByPromotionName(String name);
+    boolean existsByPromotionNameAndStateTrue(String name);
 
     @Query(value = "SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM PromotionEntity p WHERE p.promotionId = :promotionId AND p.state = true")
     boolean existsByPromotionIdAndStateTrue(Long promotionId);

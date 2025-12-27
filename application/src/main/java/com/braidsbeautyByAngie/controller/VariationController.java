@@ -31,7 +31,7 @@ public class VariationController {
     @GetMapping("/list/company/{companyId}")
     public ApiResponse listVariationsByCompanyId(@PathVariable(name = "companyId") Long companyId) {
         return ApiResponse.ok("List of variations retrieved successfully",
-                variationServiceIn.listVariationByCompanyIdIn(companyId));
+                variationServiceIn.listVariationIn());
     }
 
     @GetMapping(value = "/{variationId}")

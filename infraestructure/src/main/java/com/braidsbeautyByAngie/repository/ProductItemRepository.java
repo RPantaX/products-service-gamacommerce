@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProductItemRepository extends JpaRepository<ProductItemEntity, Long> {
-    boolean existsByProductItemSKU(String sku);
+    boolean existsByProductItemSKUAndStateTrue(String sku);
 
     @Query(value = "SELECT p FROM ProductItemEntity p WHERE p.productItemId = :productId AND p.state = true")
     Optional<ProductItemEntity> findByProductItemIdAndStateTrue(Long productId);

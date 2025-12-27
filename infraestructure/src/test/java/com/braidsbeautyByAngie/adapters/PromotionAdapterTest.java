@@ -124,7 +124,7 @@ class PromotionAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(promotionRepository.existsByPromotionName("Summer Sale")).thenReturn(false);
+            when(promotionRepository.existsByPromotionNameAndStateTrue("Summer Sale")).thenReturn(false);
             when(promotionRepository.save(any(PromotionEntity.class))).thenReturn(promotionEntity);
             when(promotionMapper.mapPromotionEntityToDto(promotionEntity)).thenReturn(promotionDTO);
 
@@ -140,7 +140,7 @@ class PromotionAdapterTest {
             assertEquals(endDate, result.getPromotionEndDate());
             assertEquals(1L, result.getPromotionId());
 
-            verify(promotionRepository).existsByPromotionName("Summer Sale");
+            verify(promotionRepository).existsByPromotionNameAndStateTrue("Summer Sale");
             verify(promotionRepository).save(any(PromotionEntity.class));
             verify(promotionMapper).mapPromotionEntityToDto(promotionEntity);
         }
@@ -150,7 +150,7 @@ class PromotionAdapterTest {
     @DisplayName("Should throw exception when promotion name already exists")
     void createPromotionOut_WithExistingPromotionName_ShouldThrowException() {
         // Given
-        when(promotionRepository.existsByPromotionName("Summer Sale")).thenReturn(true);
+        when(promotionRepository.existsByPromotionNameAndStateTrue("Summer Sale")).thenReturn(true);
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
             validateUtilMock.when(() -> ValidateUtil.evaluar(eq(true), any(GlobalErrorEnum.class)))
@@ -161,7 +161,7 @@ class PromotionAdapterTest {
                 promotionAdapter.createPromotionOut(requestPromotion);
             });
 
-            verify(promotionRepository).existsByPromotionName("Summer Sale");
+            verify(promotionRepository).existsByPromotionNameAndStateTrue("Summer Sale");
             verify(promotionRepository, never()).save(any());
         }
     }
@@ -628,7 +628,7 @@ class PromotionAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(promotionRepository.existsByPromotionName("Simple Sale")).thenReturn(false);
+            when(promotionRepository.existsByPromotionNameAndStateTrue("Simple Sale")).thenReturn(false);
             when(promotionRepository.save(any(PromotionEntity.class))).thenReturn(minimalEntity);
             when(promotionMapper.mapPromotionEntityToDto(minimalEntity)).thenReturn(minimalDTO);
 

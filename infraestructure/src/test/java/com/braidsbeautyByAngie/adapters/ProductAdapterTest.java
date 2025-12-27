@@ -147,7 +147,7 @@ class ProductAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productRepository.existsByProductName("iPhone 15")).thenReturn(false);
+            when(productRepository.existsByProductNameAndCompanyIdAndStateTrue("iPhone 15", 1L)).thenReturn(false);
             when(productCategoryRepository.findProductCategoryIdAndStateTrue(1L)).thenReturn(Optional.of(categoryEntity));
             when(productRepository.save(any(ProductEntity.class))).thenReturn(productEntity);
             when(productMapper.mapProductEntityToDto(productEntity)).thenReturn(productDTO);
@@ -162,7 +162,7 @@ class ProductAdapterTest {
             assertEquals("iphone15.jpg", result.getProductImage());
             assertEquals(1L, result.getProductId());
 
-            verify(productRepository).existsByProductName("iPhone 15");
+            verify(productRepository).existsByProductNameAndCompanyIdAndStateTrue("iPhone 15", 1L);
             verify(productCategoryRepository).findProductCategoryIdAndStateTrue(1L);
             verify(productRepository).save(any(ProductEntity.class));
             verify(productMapper).mapProductEntityToDto(productEntity);
@@ -173,7 +173,7 @@ class ProductAdapterTest {
     @DisplayName("Should throw exception when product name already exists")
     void createProductOut_WithExistingProductName_ShouldThrowException() {
         // Given
-        when(productRepository.existsByProductName("iPhone 15")).thenReturn(true);
+        when(productRepository.existsByProductNameAndCompanyIdAndStateTrue("iPhone 15", 1L)).thenReturn(true);
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
             validateUtilMock.when(() -> ValidateUtil.evaluar(eq(false), any(ProductsErrorEnum.class)))
@@ -184,7 +184,7 @@ class ProductAdapterTest {
                 productAdapter.createProductOut(requestProduct);
             });
 
-            verify(productRepository).existsByProductName("iPhone 15");
+            verify(productRepository).existsByProductNameAndCompanyIdAndStateTrue("iPhone 15", 1L);
             verify(productCategoryRepository, never()).findProductCategoryIdAndStateTrue(anyLong());
             verify(productRepository, never()).save(any());
         }
@@ -194,7 +194,7 @@ class ProductAdapterTest {
     @DisplayName("Should throw exception when category not found")
     void createProductOut_WithInvalidCategoryId_ShouldThrowException() {
         // Given
-        when(productRepository.existsByProductName("iPhone 15")).thenReturn(false);
+        when(productRepository.existsByProductNameAndCompanyIdAndStateTrue("iPhone 15", 1L)).thenReturn(false);
         when(productCategoryRepository.findProductCategoryIdAndStateTrue(1L)).thenReturn(Optional.empty());
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
@@ -206,7 +206,7 @@ class ProductAdapterTest {
                 productAdapter.createProductOut(requestProduct);
             });
 
-            verify(productRepository).existsByProductName("iPhone 15");
+            verify(productRepository).existsByProductNameAndCompanyIdAndStateTrue("iPhone 15", 1L);
             verify(productCategoryRepository).findProductCategoryIdAndStateTrue(1L);
             verify(productRepository, never()).save(any());
         }
@@ -416,7 +416,7 @@ class ProductAdapterTest {
             verify(productRepository).save(any(ProductEntity.class));
             verify(productMapper).mapProductEntityToDto(updatedEntity);
             // Should not check for existing name since it's the same (case insensitive)
-            verify(productRepository, never()).existsByProductName(anyString());
+            verify(productRepository, never()).existsByProductNameAndCompanyIdAndStateTrue(anyString(), anyLong());
         }
     }
 
@@ -436,7 +436,7 @@ class ProductAdapterTest {
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
             when(productRepository.findProductByProductIdWithStateTrue(1L)).thenReturn(Optional.of(productEntity));
-            when(productRepository.existsByProductName("iPhone 16")).thenReturn(false);
+            when(productRepository.existsByProductNameAndCompanyIdAndStateTrue("iPhone 16", 1L)).thenReturn(false);
             when(productCategoryRepository.existByProductCategoryIdAndStateTrue(1L)).thenReturn(true);
             when(productCategoryRepository.findProductCategoryIdAndStateTrue(1L)).thenReturn(Optional.of(categoryEntity));
             when(productRepository.save(any(ProductEntity.class))).thenReturn(productEntity);
@@ -447,7 +447,7 @@ class ProductAdapterTest {
 
             // Then
             assertNotNull(result);
-            verify(productRepository).existsByProductName("iPhone 16");
+            verify(productRepository).existsByProductNameAndCompanyIdAndStateTrue("iPhone 16", 1L);
             verify(productRepository).save(any(ProductEntity.class));
         }
     }
@@ -464,7 +464,7 @@ class ProductAdapterTest {
                 .build();
 
         when(productRepository.findProductByProductIdWithStateTrue(1L)).thenReturn(Optional.of(productEntity));
-        when(productRepository.existsByProductName("Samsung Galaxy")).thenReturn(true);
+        when(productRepository.existsByProductNameAndCompanyIdAndStateTrue("Samsung Galaxy", 1L)).thenReturn(true);
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
             validateUtilMock.when(() -> ValidateUtil.evaluar(eq(false), any(ProductsErrorEnum.class)))
@@ -475,7 +475,7 @@ class ProductAdapterTest {
                 productAdapter.updateProductOut(1L, updateRequest);
             });
 
-            verify(productRepository).existsByProductName("Samsung Galaxy");
+            verify(productRepository).existsByProductNameAndCompanyIdAndStateTrue("Samsung Galaxy", 1L);
             verify(productRepository, never()).save(any());
         }
     }

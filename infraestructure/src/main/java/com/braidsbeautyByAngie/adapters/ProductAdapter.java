@@ -302,7 +302,7 @@ public class ProductAdapter implements ProductServiceOut {
                 Sort.by(orderBy).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(Constants.getCompanyIdInSession() ,pageable);
+        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(companyId ,pageable);
         if (productPage.isEmpty()) {
             log.warn("No products found for company ID: {}", companyId);
             return new ResponseListPageableProduct(Collections.emptyList(), pageNumber, pageSize, 0, 0, true);
@@ -395,7 +395,7 @@ public class ProductAdapter implements ProductServiceOut {
         log.info("Executing product filter in adapter with parameters: {}", filter);
         // Validaciones de negocio si son necesarias
         validateFilterRequest(filter);
-        ResponseListPageableProduct emptyResponse = productCategoryRepository.filterProductsByCompanyId(filter, Constants.getCompanyIdInSession());
+        ResponseListPageableProduct emptyResponse = productCategoryRepository.filterProductsByCompanyId(filter, companyId);
         List <ResponseProductItemDetaill> emptyItem = emptyResponse.getResponseProductList().stream().flatMap(product ->
                 product.getResponseProductItemDetails().stream()
         ).toList();
@@ -593,7 +593,7 @@ public class ProductAdapter implements ProductServiceOut {
         }
     }
 
-    private boolean productNameExistsByName(String productName){ return productRepository.existsByProductName(productName); }
+    private boolean productNameExistsByName(String productName){ return productRepository.existsByProductNameAndCompanyIdAndStateTrue(productName,Constants.getCompanyIdInSession()); }
 
     private ProductEntity getProductEntity(Long productId) {
         ProductEntity product = productRepository.findProductByProductIdWithStateTrue(productId).orElse(null);

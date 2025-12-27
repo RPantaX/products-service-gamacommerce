@@ -39,7 +39,6 @@ public class ProductController {
     private final ProductServiceIn productServiceIn;
 
     @GetMapping("/list")
-    @RequireRole // Solo requiere estar autenticado
     public ResponseEntity<ApiResponse> listProductPageableList(@RequestParam(value = "pageNo", defaultValue = Constants.NUM_PAG_BY_DEFECT, required = false) int pageNo,
                                                                                 @RequestParam(value = "pageSize", defaultValue = Constants.SIZE_PAG_BY_DEFECT, required = false) int pageSize,
                                                                                 @RequestParam(value = "sortBy", defaultValue = Constants.ORDER_BY_DEFECT_ALL, required = false) String sortBy,
@@ -48,7 +47,6 @@ public class ProductController {
                 productServiceIn.listProductPageableIn(pageNo, pageSize, sortBy, sortDir)));
     }
     @GetMapping("/list/company/{companyId}")
-    @RequireRole // Solo requiere estar autenticado
     public ResponseEntity<ApiResponse> listProductByCompanyIdPageableList(@RequestParam(value = "pageNo", defaultValue = Constants.NUM_PAG_BY_DEFECT, required = false) int pageNo,
                                                                @RequestParam(value = "pageSize", defaultValue = Constants.SIZE_PAG_BY_DEFECT, required = false) int pageSize,
                                                                @RequestParam(value = "sortBy", defaultValue = Constants.ORDER_BY_DEFECT_ALL, required = false) String sortBy,

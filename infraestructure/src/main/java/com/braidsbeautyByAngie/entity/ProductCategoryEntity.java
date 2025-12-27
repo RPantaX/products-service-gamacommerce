@@ -22,7 +22,7 @@ public class ProductCategoryEntity {
     @Column(name = "Product_Category_ID", nullable = false)
     private Long productCategoryId;
 
-    @Column(name = "Product_Category_Name", nullable = false, unique = true)
+    @Column(name = "Product_Category_Name", nullable = false)
     private String productCategoryName;
     // Relación de "padre" (ManyToOne) a "hijos" (OneToMany) en la misma entidad
     @ManyToOne
@@ -32,7 +32,7 @@ public class ProductCategoryEntity {
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
     private List<ProductCategoryEntity> subCategories = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = PromotionEntity.class, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, targetEntity = PromotionEntity.class, cascade = CascadeType.PERSIST)
     @JoinTable(name = "Promotion_Product_Category",
             joinColumns = @JoinColumn(name = "Product_Category_ID", referencedColumnName = "Product_Category_ID"),
             inverseJoinColumns = @JoinColumn(name = "Promotion_ID", referencedColumnName = "Promotion_ID"))

@@ -298,7 +298,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     }
 
     private boolean productItemExistsBySKU(String sku) {
-        return productItemRepository.existsByProductItemSKU(sku.toUpperCase());
+        return productItemRepository.existsByProductItemSKUAndStateTrue(sku.toUpperCase());
     }
     private Set<VariationOptionEntity> saveVariations(List<RequestVariationName> requestVariationNameList) {
         return requestVariationNameList.stream().map(
