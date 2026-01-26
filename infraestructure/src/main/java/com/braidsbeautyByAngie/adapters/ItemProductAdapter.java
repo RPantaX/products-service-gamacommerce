@@ -8,11 +8,13 @@ import com.braidsbeautyByAngie.aggregates.request.RequestItemProduct;
 import com.braidsbeautyByAngie.aggregates.request.RequestVariationName;
 import com.braidsbeautyByAngie.aggregates.response.categories.ResponseCategoryy;
 import com.braidsbeautyByAngie.aggregates.response.products.*;
+import com.braidsbeautyByAngie.aggregates.response.rest.ResponseCompany;
 import com.braidsbeautyByAngie.entity.*;
 import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ItemProductServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
+import com.braidsbeautyByAngie.rest.UsersCompanyAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +54,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     @Value("${BUCKET_NAME_USUARIOS}")
     private String bucketName;
 
+    private final UsersCompanyAdapter usersCompanyAdapter;
     @Transactional
     @Override
     public ProductItemDTO createItemProductOut(RequestItemProduct requestItemProduct) {
@@ -376,12 +379,18 @@ public class ItemProductAdapter implements ItemProductServiceOut {
                 .map(result -> new ResponseVariationn((String) result[5], (String) result[6]))
                 .toList();
 
+        ResponseCompany responseCompany = usersCompanyAdapter.getUserCompanyById(productItemEntity.getCompanyId()).getData();
         return ResponseProductItemDetail.builder()
                 .productItemId((Long) firstResult[0])
                 .productItemSKU((String) firstResult[1])
                 .productItemQuantityInStock((Integer) firstResult[2])
                 .productItemImage((String) firstResult[3])
                 .productItemPrice((BigDecimal) firstResult[4])
+                .companyId((Long) firstResult[7])
+                .companyName(responseCompany.getCompanyName())
+                .companyTradeName(responseCompany.getCompanyTradeName())
+                .companyImage(responseCompany.getImage())
+                .companyRuc(responseCompany.getCompanyRuc())
                 .responseCategoryy(responseCategoryy)
                 .variations(variations)
                 .build();

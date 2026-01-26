@@ -125,29 +125,39 @@ public class ProductAdapter implements ProductServiceOut {
         Map<Long, ResponseProductItemDetaill> itemMap = new HashMap<>();
 
         for (Object[] row : results) {
-            Long itemId = Optional.ofNullable((Long) row[4]).orElse(null);
-            if (itemId != null && !itemMap.containsKey(itemId)) {
-                ResponseProductItemDetaill itemDetail = ResponseProductItemDetaill.builder()
-                        .productItemId(itemId)
-                        .productItemSKU(Optional.ofNullable((String) row[5]).orElse(""))
-                        .productItemQuantityInStock(Optional.ofNullable((Integer) row[6]).orElse(0))
-                        .productItemImage(Optional.ofNullable((String) row[7]).orElse(""))
-                        .productItemPrice(Optional.ofNullable((BigDecimal) row[8]).orElse(BigDecimal.ZERO))
+            Long itemId = (Long) row[4];
+            if (itemId == null) continue;
+
+            // Si el ítem no está en el mapa, lo creamos
+            ResponseProductItemDetaill itemDetail = itemMap.computeIfAbsent(itemId, id -> {
+                ResponseProductItemDetaill newItem = ResponseProductItemDetaill.builder()
+                        .productItemId(id)
+                        .productItemSKU((String) row[5])
+                        .productItemQuantityInStock((Integer) row[6])
+                        .productItemImage((String) row[7])
+                        .productItemPrice((BigDecimal) row[8])
                         .variations(new ArrayList<>())
                         .build();
-                itemMap.put(itemId, itemDetail);
-                productDetail.getResponseProductItemDetails().add(itemDetail);
-            }
+                productDetail.getResponseProductItemDetails().add(newItem);
+                return newItem;
+            });
 
-            if (itemId != null) {
-                ResponseVariationn variationDetail = ResponseVariationn.builder()
-                        .variationName(Optional.ofNullable((String) row[9]).orElse(""))
-                        .options(Optional.ofNullable((String) row[10]).orElse(""))
-                        .build();
-                itemMap.get(itemId).getVariations().add(variationDetail);
+            // 4. AGREGAR VARIACIÓN (Solo si no existe ya para este ítem)
+            String varName = (String) row[9];
+            String varValue = (String) row[10];
+
+            if (varName != null) {
+                boolean alreadyExists = itemDetail.getVariations().stream()
+                        .anyMatch(v -> v.getVariationName().equals(varName) && v.getOptions().equals(varValue));
+
+                if (!alreadyExists) {
+                    itemDetail.getVariations().add(ResponseVariationn.builder()
+                            .variationName(varName)
+                            .options(varValue)
+                            .build());
+                }
             }
         }
-
         return productDetail;
     }
     @Transactional
