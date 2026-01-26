@@ -57,5 +57,14 @@ public class ItemProductController {
         return ResponseEntity.ok(ApiResponse.ok("Item product deleted",
                 productServiceIn.deleteItemProductIn(itemProductId)));
     }
-
+    //get all item products with pagination
+    @GetMapping("/pageable")
+    public ResponseEntity<ApiResponse> listItemProductsPageable(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String orderBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(ApiResponse.ok("Paginated item products retrieved successfully",
+                productServiceIn.listItemProductPageableIn(pageNumber, pageSize, orderBy, sortDir)));
+    }
 }

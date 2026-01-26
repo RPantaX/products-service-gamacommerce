@@ -23,4 +23,5 @@ public interface PromotionServiceIn {
     List<PromotionDTO> listPromotionIn();
     List<PromotionDTO> listPromotionByCompanyIdIn(Long companyId);
     Optional<PromotionDTO> findPromotionByNameIn(String promotionName);
+    void deleteAllByCompanyIdOut(Long companyId);
 }

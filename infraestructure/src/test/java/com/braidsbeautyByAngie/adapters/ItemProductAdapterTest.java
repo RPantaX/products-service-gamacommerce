@@ -147,7 +147,7 @@ class ItemProductAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
+            when(productItemRepository.existsByProductItemSKUAndStateTrue("SKU001")).thenReturn(false);
             when(productRepository.findById(1L)).thenReturn(Optional.of(productEntity));
             when(variationRepository.findByVariationName("Color")).thenReturn(List.of(variationEntity));
             when(variationOptionRepository.existsByVariationOptionValue("Red")).thenReturn(false);
@@ -164,7 +164,7 @@ class ItemProductAdapterTest {
             assertEquals(BigDecimal.valueOf(999.99), result.getProductItemPrice());
             assertEquals(10, result.getProductItemQuantityInStock());
 
-            verify(productItemRepository).existsByProductItemSKU("SKU001");
+            verify(productItemRepository).existsByProductItemSKUAndStateTrue("SKU001");
             verify(productRepository).findById(1L);
             verify(variationRepository).findByVariationName("Color");
             verify(productItemRepository).save(any(ProductItemEntity.class));
@@ -384,7 +384,7 @@ class ItemProductAdapterTest {
     @DisplayName("Should throw exception when product item SKU already exists")
     void createItemProductOut_WithExistingSKU_ShouldThrowException() {
         // Given
-        when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(true);
+        when(productItemRepository.existsByProductItemSKUAndStateTrue("SKU001")).thenReturn(true);
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
             validateUtilMock.when(() -> ValidateUtil.evaluar(eq(false), any(ProductsErrorEnum.class)))
@@ -395,7 +395,7 @@ class ItemProductAdapterTest {
                 itemProductAdapter.createItemProductOut(requestItemProduct);
             });
 
-            verify(productItemRepository).existsByProductItemSKU("SKU001");
+            verify(productItemRepository).existsByProductItemSKUAndStateTrue("SKU001");
             verify(productRepository, never()).findById(anyLong());
             verify(productItemRepository, never()).save(any());
         }
@@ -405,7 +405,7 @@ class ItemProductAdapterTest {
     @DisplayName("Should throw exception when product not found")
     void createItemProductOut_WithInvalidProductId_ShouldThrowException() {
         // Given
-        when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
+        when(productItemRepository.existsByProductItemSKUAndStateTrue("SKU001")).thenReturn(false);
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
 
         try (MockedStatic<ValidateUtil> validateUtilMock = mockStatic(ValidateUtil.class)) {
@@ -426,7 +426,7 @@ class ItemProductAdapterTest {
     @DisplayName("Should throw exception when variation not found")
     void createItemProductOut_WithInvalidVariation_ShouldThrowException() {
         // Given
-        when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
+        when(productItemRepository.existsByProductItemSKUAndStateTrue("SKU001")).thenReturn(false);
         when(productRepository.findById(1L)).thenReturn(Optional.of(productEntity));
         when(variationRepository.findByVariationName("Color")).thenReturn(List.of());
 
@@ -452,7 +452,7 @@ class ItemProductAdapterTest {
             constantsMock.when(Constants::getTimestamp).thenReturn(currentTimestamp);
             constantsMock.when(Constants::getUserInSession).thenReturn("testUser");
 
-            when(productItemRepository.existsByProductItemSKU("SKU001")).thenReturn(false);
+            when(productItemRepository.existsByProductItemSKUAndStateTrue("SKU001")).thenReturn(false);
             when(productRepository.findById(1L)).thenReturn(Optional.of(productEntity));
             when(variationRepository.findByVariationName("Color")).thenReturn(List.of(variationEntity));
             when(variationOptionRepository.existsByVariationOptionValue("Red")).thenReturn(true);

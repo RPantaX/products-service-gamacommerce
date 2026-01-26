@@ -116,7 +116,7 @@ public class PromotionAdapter implements PromotionServiceOut {
 
         Pageable pageable = createPageable(pageNumber, pageSize, orderBy, sortDir);
 
-        Page<PromotionEntity> promotionsPage = promotionRepository.findAllByStateTrueAndCompanyIdAndPageable(pageable, Constants.getCompanyIdInSession());
+        Page<PromotionEntity> promotionsPage = promotionRepository.findAllByStateTrueAndCompanyIdAndPageable(pageable, companyId);
 
         if (promotionsPage.isEmpty()) {
             log.info("No promotions found for given parameters");
@@ -142,7 +142,7 @@ public class PromotionAdapter implements PromotionServiceOut {
     public List<PromotionDTO> listPromotionByCompanyIdOut(Long companyId) {
         log.info("Fetching all promotions");
 
-        List<PromotionEntity> promotionEntities = promotionRepository.findAllByStateTrueAndCompanyId(Constants.getCompanyIdInSession());
+        List<PromotionEntity> promotionEntities = promotionRepository.findAllByStateTrueAndCompanyId(companyId);
         return promotionEntities.stream().map(promotionMapper::mapPromotionEntityToDto).toList();
     }
 
@@ -156,6 +156,13 @@ public class PromotionAdapter implements PromotionServiceOut {
             ValidateUtil.requerido(null, GlobalErrorEnum.PROMOTION_NOT_FOUND_ERPN00022);
         }
         return Optional.of(promotionMapper.mapPromotionEntityToDto(promotionEntity));
+    }
+
+    @Override
+    public void deleteAllByCompanyIdOut(Long companyId) {
+        log.info("Deleting all promotions for company ID: {}", companyId);
+        promotionRepository.deleteAllByCompanyId(companyId);
+        log.info("All promotions for company ID {} deleted successfully", companyId);
     }
 
     // Helper methods for better organization and code readability
@@ -213,7 +220,7 @@ public class PromotionAdapter implements PromotionServiceOut {
     }
 
     private boolean promotionExistByName(String promotionName) {
-        return promotionRepository.existsByPromotionName(promotionName.toUpperCase());
+        return promotionRepository.existsByPromotionNameAndStateTrue(promotionName.toUpperCase());
     }
 
     private Optional<PromotionEntity> getPromotionEntity(Long promotionId) {

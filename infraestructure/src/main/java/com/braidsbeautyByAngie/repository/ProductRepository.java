@@ -2,9 +2,11 @@ package com.braidsbeautyByAngie.repository;
 
 import com.braidsbeautyByAngie.aggregates.response.products.ResponseProduct;
 import com.braidsbeautyByAngie.entity.ProductEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,7 +17,8 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity,Long> {
-    boolean existsByProductName(String productName);
+    //existsByProductName by companyId
+    boolean existsByProductNameAndCompanyIdAndStateTrue(String productName, Long companyId);
 
     @Query(value = "SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM ProductEntity p WHERE p.productId = :productId AND p.state = true")
     boolean existsByProductIdWithStateTrue(Long productId);
@@ -130,4 +133,11 @@ public interface ProductRepository extends JpaRepository<ProductEntity,Long> {
     List<Object[]> findProductWithItemsAndCategory(@Param("productId") Long productId);
     @Query("SELECT COUNT(p) FROM ProductEntity p WHERE p.productCategoryEntity.productCategoryId = :categoryId AND p.state = true")
     int countByCategoryIdAndStateTrue(@Param("categoryId") Long categoryId);
+
+    //Delete all products where companyId = companyId
+    @Modifying
+// 2. Añadir @Transactional para asegurar que la operación DELETE se ejecute dentro de una transacción.
+    @Transactional
+    @Query("DELETE FROM ProductEntity p WHERE p.companyId = :companyId")
+    void deleteByCompanyId(@Param("companyId") Long companyId);
 }

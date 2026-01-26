@@ -1,17 +1,20 @@
 package com.braidsbeautyByAngie.repository;
 
 import com.braidsbeautyByAngie.entity.ProductItemEntity;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ProductItemRepository extends JpaRepository<ProductItemEntity, Long> {
-    boolean existsByProductItemSKU(String sku);
+    boolean existsByProductItemSKUAndStateTrue(String sku);
 
     @Query(value = "SELECT p FROM ProductItemEntity p WHERE p.productItemId = :productId AND p.state = true")
     Optional<ProductItemEntity> findByProductItemIdAndStateTrue(Long productId);
@@ -23,7 +26,8 @@ public interface ProductItemRepository extends JpaRepository<ProductItemEntity, 
                pi.productItemImage AS productItemImage, 
                pi.productItemPrice AS productItemPrice, 
                v.variationName AS variationName, 
-               vo.variationOptionValue AS variationOptionValue
+               vo.variationOptionValue AS variationOptionValue,
+               pi.companyId AS companyId
         FROM ProductItemEntity pi
         JOIN pi.variationOptionEntitySet vo
         JOIN vo.variationEntity v
@@ -50,4 +54,13 @@ public interface ProductItemRepository extends JpaRepository<ProductItemEntity, 
 
     @Query("SELECT MIN(pi.productItemPrice), MAX(pi.productItemPrice) FROM ProductItemEntity pi WHERE pi.state = true")
     List<Object[]> findPriceRange();
+    //deleteByCompanyId
+    @Modifying
+// 2. Añadir @Transactional para asegurar que la operación DELETE se ejecute dentro de una transacción.
+    @Transactional
+    @Query("DELETE FROM ProductItemEntity pi WHERE pi.companyId = :companyId")
+    void deleteByCompanyId(@Param("companyId") Long companyId);
+
+    @Query(value = "SELECT p FROM ProductItemEntity p WHERE p.state=true")
+    Page<ProductItemEntity> findAllByStateTrueAndPageable(Pageable pageable);
 }

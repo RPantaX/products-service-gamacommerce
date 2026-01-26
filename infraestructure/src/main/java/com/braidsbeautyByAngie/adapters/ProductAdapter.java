@@ -10,6 +10,7 @@ import com.braidsbeautyByAngie.aggregates.response.products.*;
 import com.braidsbeautyByAngie.entity.*;
 import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ProductServiceOut;
+import com.braidsbeautyByAngie.ports.out.PromotionServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
@@ -47,6 +48,9 @@ public class ProductAdapter implements ProductServiceOut {
     private final VariationRepository variationRepository;
     private final VariationOptionRepository variationOptionRepository;
     private final IBucketUtil bucketUtil;
+
+    private final PromotionServiceOut promotionServiceOut;
+
     @Value("${BUCKET_NAME_USUARIOS}")
     private String bucketName;
 
@@ -121,29 +125,39 @@ public class ProductAdapter implements ProductServiceOut {
         Map<Long, ResponseProductItemDetaill> itemMap = new HashMap<>();
 
         for (Object[] row : results) {
-            Long itemId = Optional.ofNullable((Long) row[4]).orElse(null);
-            if (itemId != null && !itemMap.containsKey(itemId)) {
-                ResponseProductItemDetaill itemDetail = ResponseProductItemDetaill.builder()
-                        .productItemId(itemId)
-                        .productItemSKU(Optional.ofNullable((String) row[5]).orElse(""))
-                        .productItemQuantityInStock(Optional.ofNullable((Integer) row[6]).orElse(0))
-                        .productItemImage(Optional.ofNullable((String) row[7]).orElse(""))
-                        .productItemPrice(Optional.ofNullable((BigDecimal) row[8]).orElse(BigDecimal.ZERO))
+            Long itemId = (Long) row[4];
+            if (itemId == null) continue;
+
+            // Si el ítem no está en el mapa, lo creamos
+            ResponseProductItemDetaill itemDetail = itemMap.computeIfAbsent(itemId, id -> {
+                ResponseProductItemDetaill newItem = ResponseProductItemDetaill.builder()
+                        .productItemId(id)
+                        .productItemSKU((String) row[5])
+                        .productItemQuantityInStock((Integer) row[6])
+                        .productItemImage((String) row[7])
+                        .productItemPrice((BigDecimal) row[8])
                         .variations(new ArrayList<>())
                         .build();
-                itemMap.put(itemId, itemDetail);
-                productDetail.getResponseProductItemDetails().add(itemDetail);
-            }
+                productDetail.getResponseProductItemDetails().add(newItem);
+                return newItem;
+            });
 
-            if (itemId != null) {
-                ResponseVariationn variationDetail = ResponseVariationn.builder()
-                        .variationName(Optional.ofNullable((String) row[9]).orElse(""))
-                        .options(Optional.ofNullable((String) row[10]).orElse(""))
-                        .build();
-                itemMap.get(itemId).getVariations().add(variationDetail);
+            // 4. AGREGAR VARIACIÓN (Solo si no existe ya para este ítem)
+            String varName = (String) row[9];
+            String varValue = (String) row[10];
+
+            if (varName != null) {
+                boolean alreadyExists = itemDetail.getVariations().stream()
+                        .anyMatch(v -> v.getVariationName().equals(varName) && v.getOptions().equals(varValue));
+
+                if (!alreadyExists) {
+                    itemDetail.getVariations().add(ResponseVariationn.builder()
+                            .variationName(varName)
+                            .options(varValue)
+                            .build());
+                }
             }
         }
-
         return productDetail;
     }
     @Transactional
@@ -298,15 +312,18 @@ public class ProductAdapter implements ProductServiceOut {
                 Sort.by(orderBy).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(Constants.getCompanyIdInSession() ,pageable);
-
+        Page<ProductEntity> productPage = productRepository.findAllByStateTrueAndCompanyIdAndPageable(companyId ,pageable);
+        if (productPage.isEmpty()) {
+            log.warn("No products found for company ID: {}", companyId);
+            return new ResponseListPageableProduct(Collections.emptyList(), pageNumber, pageSize, 0, 0, true);
+        }
         // Convertir entidades a DTOs
         List<ResponseProduct> responseProductList = productPage.getContent().stream().map(product -> {
 
             ProductEntity productEntity = productRepository.findProductByProductIdWithStateTrue(product.getProductId()).orElse(null);
             if (productEntity == null) {
                 log.error("Product category is null for product ID: {}", product.getProductId());
-                ValidateUtil.evaluar(false, GlobalErrorEnum.CATEGORY_NOT_FOUND_ERC00008);
+                ValidateUtil.evaluar(false, ProductsErrorEnum.PRODUCT_NOT_FOUND_ERP00001);
             }
             ProductCategoryEntity productCategory = productCategoryRepository.findProductCategoryIdAndStateTrue(productEntity.getProductCategoryEntity().getProductCategoryId()).orElse(null);
             if (productCategory == null) {
@@ -388,7 +405,7 @@ public class ProductAdapter implements ProductServiceOut {
         log.info("Executing product filter in adapter with parameters: {}", filter);
         // Validaciones de negocio si son necesarias
         validateFilterRequest(filter);
-        ResponseListPageableProduct emptyResponse = productCategoryRepository.filterProductsByCompanyId(filter, Constants.getCompanyIdInSession());
+        ResponseListPageableProduct emptyResponse = productCategoryRepository.filterProductsByCompanyId(filter, companyId);
         List <ResponseProductItemDetaill> emptyItem = emptyResponse.getResponseProductList().stream().flatMap(product ->
                 product.getResponseProductItemDetails().stream()
         ).toList();
@@ -448,6 +465,17 @@ public class ProductAdapter implements ProductServiceOut {
             throw new RuntimeException("Error al obtener opciones de filtro", e);
         }
     }
+
+    @Override
+    public void deleteProductsByCompanyIdOut(Long companyId) {
+        log.info("Deleting products for company ID: {}", companyId);
+        promotionServiceOut.deleteAllByCompanyIdOut(companyId);
+        variationRepository.deleteAllByCompanyId(companyId);
+        productItemRepository.deleteByCompanyId(companyId);
+        productRepository.deleteByCompanyId(companyId);
+        log.info("Products deleted for company ID: {}", companyId);
+    }
+
     private int getProductCountByCategory(Long categoryId) {
         return productRepository.countByCategoryIdAndStateTrue(categoryId);
     }
@@ -575,7 +603,7 @@ public class ProductAdapter implements ProductServiceOut {
         }
     }
 
-    private boolean productNameExistsByName(String productName){ return productRepository.existsByProductName(productName); }
+    private boolean productNameExistsByName(String productName){ return productRepository.existsByProductNameAndCompanyIdAndStateTrue(productName,Constants.getCompanyIdInSession()); }
 
     private ProductEntity getProductEntity(Long productId) {
         ProductEntity product = productRepository.findProductByProductIdWithStateTrue(productId).orElse(null);

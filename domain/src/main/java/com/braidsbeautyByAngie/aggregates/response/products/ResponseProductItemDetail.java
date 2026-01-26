@@ -16,6 +16,11 @@ public class ResponseProductItemDetail {
     private String productItemSKU;
     private int productItemQuantityInStock;
     private String productItemImage;
+    private String companyName;
+    private String companyRuc;
+    private String companyImage;
+    private String companyTradeName;
+    private Long companyId;
     private BigDecimal productItemPrice;
     private ResponseCategoryy responseCategoryy;
     private List<ResponseVariationn> variations;

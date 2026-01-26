@@ -62,4 +62,9 @@ public class PromotionServiceImpl implements PromotionServiceIn {
     public Optional<PromotionDTO> findPromotionByNameIn(String promotionName) {
         return promotionServiceOut.findPromotionByNameOut(promotionName);
     }
+
+    @Override
+    public void deleteAllByCompanyIdOut(Long companyId) {
+        promotionServiceOut.deleteAllByCompanyIdOut(companyId);
+    }
 }

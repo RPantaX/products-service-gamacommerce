@@ -8,11 +8,17 @@ import com.braidsbeautyByAngie.aggregates.request.RequestItemProduct;
 import com.braidsbeautyByAngie.aggregates.request.RequestVariationName;
 import com.braidsbeautyByAngie.aggregates.response.categories.ResponseCategoryy;
 import com.braidsbeautyByAngie.aggregates.response.products.*;
+import com.braidsbeautyByAngie.aggregates.response.rest.ResponseCompany;
 import com.braidsbeautyByAngie.entity.*;
 import com.braidsbeautyByAngie.mapper.*;
 import com.braidsbeautyByAngie.ports.out.ItemProductServiceOut;
 import com.braidsbeautyByAngie.repository.*;
 
+import com.braidsbeautyByAngie.rest.UsersCompanyAdapter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.aws.IBucketUtil;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.dto.Product;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.util.BucketParams;
@@ -48,6 +54,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     @Value("${BUCKET_NAME_USUARIOS}")
     private String bucketName;
 
+    private final UsersCompanyAdapter usersCompanyAdapter;
     @Transactional
     @Override
     public ProductItemDTO createItemProductOut(RequestItemProduct requestItemProduct) {
@@ -172,6 +179,28 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     }
 
     @Override
+    public ResponseListPageableItemProduct2 listItemProductPageableOut(int pageNumber, int pageSize, String orderBy, String sortDir) {
+        log.info("Listing itemProducts pageable: pageNumber={}, pageSize={}, orderBy={}, sortDir={}", pageNumber, pageSize, orderBy, sortDir);
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(orderBy).ascending() :
+                Sort.by(orderBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<ProductItemEntity> productItemtPage = productItemRepository.findAllByStateTrueAndPageable(pageable);
+
+        List<ResponseProductItemDetail> responseProductList = productItemtPage.getContent().stream().map(itemProduct -> {
+            List<Object[]> results = productItemRepository.findProductItemWithVariations(itemProduct.getProductItemId());
+            return buildProductItemDetail(itemProduct.getProductItemId(), results);
+        }).collect(Collectors.toList());
+        return ResponseListPageableItemProduct2.builder()
+                .responseProductList(responseProductList)
+                .pageNumber(productItemtPage.getNumber())
+                .pageSize(productItemtPage.getSize())
+                .totalElements(productItemtPage.getTotalElements())
+                .totalPages(productItemtPage.getTotalPages())
+                .end(productItemtPage.isLast())
+                .build();
+    }
+
+    @Override
     public List<ResponseProductItemDetail> listItemProductsByIdsOut(List<Long> itemProductIds) {
         if (itemProductIds == null || itemProductIds.isEmpty()) {
             log.error("No Product Item IDs provided for listing.");
@@ -272,7 +301,7 @@ public class ItemProductAdapter implements ItemProductServiceOut {
     }
 
     private boolean productItemExistsBySKU(String sku) {
-        return productItemRepository.existsByProductItemSKU(sku.toUpperCase());
+        return productItemRepository.existsByProductItemSKUAndStateTrue(sku.toUpperCase());
     }
     private Set<VariationOptionEntity> saveVariations(List<RequestVariationName> requestVariationNameList) {
         return requestVariationNameList.stream().map(
@@ -350,12 +379,18 @@ public class ItemProductAdapter implements ItemProductServiceOut {
                 .map(result -> new ResponseVariationn((String) result[5], (String) result[6]))
                 .toList();
 
+        ResponseCompany responseCompany = usersCompanyAdapter.getUserCompanyById(productItemEntity.getCompanyId()).getData();
         return ResponseProductItemDetail.builder()
                 .productItemId((Long) firstResult[0])
                 .productItemSKU((String) firstResult[1])
                 .productItemQuantityInStock((Integer) firstResult[2])
                 .productItemImage((String) firstResult[3])
                 .productItemPrice((BigDecimal) firstResult[4])
+                .companyId((Long) firstResult[7])
+                .companyName(responseCompany.getCompanyName())
+                .companyTradeName(responseCompany.getCompanyTradeName())
+                .companyImage(responseCompany.getImage())
+                .companyRuc(responseCompany.getCompanyRuc())
                 .responseCategoryy(responseCategoryy)
                 .variations(variations)
                 .build();
