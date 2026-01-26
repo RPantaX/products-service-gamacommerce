@@ -43,7 +43,8 @@ public interface ProductItemRepository extends JpaRepository<ProductItemEntity, 
            pi.productItemImage AS productItemImage, 
            pi.productItemPrice AS productItemPrice, 
            v.variationName AS variationName, 
-           vo.variationOptionValue AS variationOptionValue
+           vo.variationOptionValue AS variationOptionValue,
+           pi.companyId AS companyId
     FROM ProductItemEntity pi
     JOIN pi.variationOptionEntitySet vo
     JOIN vo.variationEntity v

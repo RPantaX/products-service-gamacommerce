@@ -1,6 +1,7 @@
 package com.braidsbeautyByAngie.adapters.handler;
 
 import com.braidsbeautyByAngie.ports.in.ItemProductServiceIn;
+import org.springframework.transaction.annotation.Transactional;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.commands.CancelProductReservationCommand;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.commands.ProductReservationCancelledEvent;
 import pe.com.gamacommerce.corelibraryservicegamacommerce.aggregates.aggregates.commands.ReserveProductCommand;
@@ -30,6 +31,7 @@ public class ProductsCommandsHandler {
     private String productsEventsTopicName;
 
     @KafkaHandler
+    @Transactional
     public void handleCommand(@Payload ReserveProductCommand command) {
         try {
             log.info("Received ReserveProductCommand: {}", command);
